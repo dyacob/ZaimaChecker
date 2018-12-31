@@ -27,26 +27,31 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 
 
 public class MiliketChecker {
 
 
-	HashMap<String,String> DiguaMiliket = new HashMap<String,String>();
-	HashMap<String, HashMap<String,String>> DiguaMiliketBySilt = new HashMap< String, HashMap<String,String> >();
+	private HashMap<String,String> DiguaMiliket = new HashMap<String,String>();
+	private HashMap<String, HashMap<String,String>> DiguaMiliketBySilt = new HashMap< String, HashMap<String,String> >();
 
-	HashMap<String,String> TsomeDiguaMiliket = new HashMap<String,String>();
-	HashMap<String, HashMap<String,String>> TsomeDiguaMiliketBySilt = new HashMap< String, HashMap<String,String> >();
+	private HashMap<String,String> TsomeDiguaMiliket = new HashMap<String,String>();
+	private HashMap<String, HashMap<String,String>> TsomeDiguaMiliketBySilt = new HashMap< String, HashMap<String,String> >();
 	
-	HashMap<String,String> MeerafMiliket = new HashMap<String,String>();
-	HashMap<String, HashMap<String,String>> MeerafMiliketBySilt = new HashMap< String, HashMap<String,String> >();
+	private HashMap<String,String> MeerafMiliket = new HashMap<String,String>();
+	private HashMap<String, HashMap<String,String>> MeerafMiliketBySilt = new HashMap< String, HashMap<String,String> >();
 	
-	HashMap<String,String> LeilaMiliket = new HashMap<String,String>();
-	HashMap<String, HashMap<String,String>> LeilaMiliketBySilt = new HashMap< String, HashMap<String,String> >();
+	private HashMap<String,String> LeilaMiliket = new HashMap<String,String>();
+	private HashMap<String, HashMap<String,String>> LeilaMiliketBySilt = new HashMap< String, HashMap<String,String> >();
 	
-	Map<String, HashMap<String,String>> books = new HashMap<String,HashMap<String,String>>();
-	Map<String, HashMap<String, HashMap<String,String>>> booksByMiliket = new HashMap<String, HashMap< String, HashMap<String,String> >>();
+	private Map<String, HashMap<String,String>> books = new HashMap<String,HashMap<String,String>>();
+	private Map<String, HashMap<String, HashMap<String,String>>> booksByMiliket = new HashMap<String, HashMap< String, HashMap<String,String> >>();
+	
+	private Pattern Qirts = Pattern.compile( "[᎐᎔᎗᎓᎒᎑᎙᎕᎖\\s]+" );
+	private String bookFlag = "all";
+
 	
 	private void readMap(String book, HashMap<String,String> map, HashMap<String, HashMap<String,String>> mapBySilt, String fileName ) throws UnsupportedEncodingException, IOException {
 
@@ -73,8 +78,17 @@ public class MiliketChecker {
 			
 			map.put( longField, shortField );
 			HashMap<String,String> siltMap = mapBySilt.get( siltField );
-			siltMap.put( longField, shortField );
+			if( siltMap != null)
+				// update this later to parse siltField for values like: ዓራራይ፡ወግዕዝ
+				siltMap.put( longField, shortField );
 		}
+		
+		map.put( "አንብር", "ር" );
+		map.put( "ድርስ", "ስ" );
+		map.put( "ድርስ2", "ርስ" );
+		map.put( "ሥረዩ", "ረዩ" );
+		
+		
 		ruleFile.close();
 	}
 	
@@ -99,7 +113,12 @@ public class MiliketChecker {
 		rpr.setColor( red ); 
 	}
 	
-	protected boolean isValidMiliket(String miliket, HashMap<String,String> miliketMap) {
+	protected boolean isValidMiliket(String annotation, HashMap<String,String> miliketMap) {
+		
+	    String miliket = Qirts.matcher(annotation).replaceAll("");
+	    if( "".equals(miliket) ) {
+	    	return true;
+	    }
 
 		for(String key: miliketMap.values() ) {
 			if( key.contains( "-" ) ) {
@@ -111,6 +130,7 @@ public class MiliketChecker {
 				}
 			}
 			else {
+				System.out.println( "Checking " + miliket + " against key: " + key );
 				if( miliket.equals(key) ) {
 					return true;
 				}
@@ -120,12 +140,29 @@ public class MiliketChecker {
 	}
 	
 	// For a given book, check miliket over all silt
+	protected boolean isValidMiliket(String miliket) {
+		return isValidMiliket( miliket, this.bookFlag );
+	}	
+	// For a given book, check miliket over all silt
 	protected boolean isValidMiliket(String miliket, String book) {
 
-		HashMap<String, String> bookMap = books.get( book );
+		if( book.equals( "all" ) ) {
+			for( HashMap<String, String> bookMap: books.values() ) {
+				boolean isValid = isValidMiliket( miliket, bookMap );
+				if ( isValid == true ) {
+					return true;
+				}
+			}
+		}
+		else {
+			HashMap<String, String> bookMap = books.get( book );
 		
-		return isValidMiliket( miliket, bookMap );
+			return isValidMiliket( miliket, bookMap );
+		}
+		
+		return false;
 	}
+	
 	
 	// For a given book, check miliket for a specific silt
 	// For a given book and silt, check miliket
@@ -166,10 +203,11 @@ public class MiliketChecker {
 						Object x2 = XmlUtils.unwrap(x);
 						if ( x2 instanceof org.docx4j.wml.Text ) {
 								Text txt = (org.docx4j.wml.Text)x2;
-								if(! isValidMiliket(txt.getValue() , "ድጓ") ) {
+								// this line is here for testing, later make the book a command line parameter
+								if(! isValidMiliket( txt.getValue() ) ) {
+									System.out.println( "Setting error for: " + txt.getValue() );
 									setError(r);
 								}
-								System.out.println( "Found: " + txt.getValue() );
 				
 						}
 						else {
@@ -213,18 +251,46 @@ public class MiliketChecker {
 	
 
 	public static void main( String[] args ) {
-		if( args.length != 2 ) {
-			System.err.println( "Exactly 3 arguements are expected: <system> <input file> <output file>" );
+		if( args.length != 3 ) {
+			System.err.println( "Exactly 3 arguements are expected: <digua|tsome-digua|meeraf|all> <input file> <output file>" );
 			System.exit(0);
 		}
 
-		String inputFilepath  = System.getProperty("user.dir") + "/" + args[0];
-		String outputFilepath = System.getProperty("user.dir") + "/" + args[1];
+
+		String miliketSet = args[0];
+		String inputFilepath  = System.getProperty("user.dir") + "/" + args[1];
+		String outputFilepath = System.getProperty("user.dir") + "/" + args[2];
 		File inputFile = new File ( inputFilepath );
 		File outputFile = new File ( outputFilepath );
 		
-		MiliketChecker converter = new MiliketChecker();
+		MiliketChecker converter = new MiliketChecker();		
+		
+		switch( miliketSet ) {
+			case "digua":
+			case "ድጓ":
+				converter.bookFlag = "ድጓ";
+				break;
+				
+			case "tsome-digua":
+			case "ጾመ፡ድጓ":
+				converter.bookFlag = "ጾመ፡ድጓ";
+				break;
+				
+			case "meeraf":
+			case "ምዕራፍ":
+				converter.bookFlag = "ምዕራፍ";
+				break;
+				
+			case "all":
+				break;
+				
+			default:
+				System.err.println( "The miliket collection \"" + miliketSet + "\", is not recognized" );
+				System.exit(0);
+		}
+		
 		converter.process( inputFile, outputFile );
+
 
 	}
 	
