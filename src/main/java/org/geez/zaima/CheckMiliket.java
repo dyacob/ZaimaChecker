@@ -49,7 +49,7 @@ public class CheckMiliket {
 	private Map<String, HashMap<String,String>> books = new HashMap<String,HashMap<String,String>>();
 	private Map<String, HashMap<String, HashMap<String,String>>> booksByMiliket = new HashMap<String, HashMap< String, HashMap<String,String> >>();
 	
-	private Pattern Qirts = Pattern.compile( "[᎐᎔᎗᎓᎒᎑᎙᎕᎖\\s]+" );
+	private Pattern Qirts = Pattern.compile( "[᎐᎔᎗᎓᎒᎑᎙᎕᎖᎘\\s]+" );
 	private String bookFlag = "all";
 
 	
@@ -130,7 +130,7 @@ public class CheckMiliket {
 				}
 			}
 			else {
-				System.out.println( "Checking " + miliket + " against key: " + key );
+				// System.out.println( "Checking " + miliket + " against key: " + key );
 				if( miliket.equals(key) ) {
 					return true;
 				}
@@ -147,7 +147,9 @@ public class CheckMiliket {
 	protected boolean isValidMiliket(String miliket, String book) {
 
 		if( book.equals( "all" ) ) {
-			for( HashMap<String, String> bookMap: books.values() ) {
+			//for( HashMap<String, String> bookMap: books.values() ) {
+			for( String key: books.keySet() ) {
+				HashMap<String, String>  bookMap = books.get(key);
 				boolean isValid = isValidMiliket( miliket, bookMap );
 				if ( isValid == true ) {
 					return true;
@@ -205,7 +207,7 @@ public class CheckMiliket {
 								Text txt = (org.docx4j.wml.Text)x2;
 								// this line is here for testing, later make the book a command line parameter
 								if(! isValidMiliket( txt.getValue() ) ) {
-									System.out.println( "Setting error for: " + txt.getValue() );
+									// System.out.println( "Setting error for: " + txt.getValue() );
 									setError(r);
 								}
 				
@@ -229,7 +231,7 @@ public class CheckMiliket {
 
 	public void setMiliketSet( String miliketSet )
 	{
-		switch( miliketSet ) {
+		switch( miliketSet.toLowerCase() ) {
 			case "digua":
 			case "ድጓ":
 				this.bookFlag = "ድጓ";
@@ -246,6 +248,7 @@ public class CheckMiliket {
 				break;
 			
 			case "all":
+			case "ኹሉም":
 				this.bookFlag = "all";
 				break;
 			

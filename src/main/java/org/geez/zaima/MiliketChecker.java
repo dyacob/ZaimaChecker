@@ -32,8 +32,9 @@ public final class MiliketChecker extends Application {
 	private static final String ድጓ = "ድጓ";
 	private static final String ጾመ_ድጓ = "ጾመ፡ድጓ";
 	private static final String ምዕራፍ = "ምዕራፍ";
+	private static final String ኹሉም = "ኹሉም";
 
-	private String miliketSet = ድጓ; // alphabetic based default
+	private String miliketSet = ኹሉም; // alphabetic based default
 	private boolean openOutput = true;
 	private List<File>  inputList = null;
 	
@@ -51,7 +52,7 @@ public final class MiliketChecker extends Application {
     
     @Override
     public void start(final Stage stage) {
-        stage.setTitle("Ethiopic Docx Converter");
+        stage.setTitle("Zaima Miliket Checker");
         Image logoImage = new Image( ClassLoader.getSystemResourceAsStream("images/geez-org-avatar.png") );
         stage.getIcons().add( logoImage );
 
@@ -61,18 +62,18 @@ public final class MiliketChecker extends Application {
         // System.out.println( osName );
         if( osName.equals("Mac OS X") ) {
         	bookMenu.setStyle("-fx-font: 12px \"Kefa\";");
-            bookMenu.getItems().addAll( ድጓ, ጾመ_ድጓ, ምዕራፍ );       
-            bookMenu.setValue( ድጓ );
+            bookMenu.getItems().addAll( ኹሉም, ድጓ, ጾመ_ድጓ, ምዕራፍ );       
+            bookMenu.setValue( ኹሉም );
         }
         else if( osName.startsWith("Windows") ) {
         	bookMenu.setStyle("-fx-font: 12px \"Ebrima\";");
-            bookMenu.getItems().addAll( ድጓ, ጾመ_ድጓ, ምዕራፍ );       
-            bookMenu.setValue( ድጓ );
+            bookMenu.getItems().addAll( ኹሉም, ድጓ, ጾመ_ድጓ, ምዕራፍ );       
+            bookMenu.setValue( ኹሉም );
         	
         }
         else {
-        	bookMenu.getItems().addAll( "Digua" , "Tsome Digua" , "Me'eraf" );       
-        	bookMenu.setValue( "Digua" );
+        	bookMenu.getItems().addAll( "All", "Digua" , "Tsome Digua" , "Me'eraf" );       
+        	bookMenu.setValue( "All" );
         }
         bookMenu.valueProperty().addListener(new ChangeListener<String>() {
             @Override
@@ -82,7 +83,7 @@ public final class MiliketChecker extends Application {
         });
         
         
-        final Button convertButton = new Button("Convert File(s)");
+        final Button convertButton = new Button("Check File(s)");
         convertButton.setDisable( true );
         convertButton.setOnAction(
                 new EventHandler<ActionEvent>() {
@@ -116,7 +117,7 @@ public final class MiliketChecker extends Application {
 
         
         
-        CheckBox openFilesCheckbox = new CheckBox( "Open file(s)\nafter conversion?");
+        CheckBox openFilesCheckbox = new CheckBox( "Open file(s)\nafter checking?");
         openFilesCheckbox.selectedProperty().addListener(new ChangeListener<Boolean>() {
             public void changed(ObservableValue<? extends Boolean> ov,
                 Boolean old_val, Boolean new_val) {
@@ -147,7 +148,7 @@ public final class MiliketChecker extends Application {
         Application.launch(args);
     }
  
-    CheckMiliket checker = null;
+    CheckMiliket checker = new CheckMiliket();
     private void openFile(File inputFile) {
         try {
         	String inputFilePath = inputFile.getPath();
