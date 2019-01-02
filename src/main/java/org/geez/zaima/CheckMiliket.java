@@ -120,20 +120,27 @@ public class CheckMiliket {
 	    	return true;
 	    }
 
-		for(String key: miliketMap.values() ) {
-			if( key.contains( "-" ) ) {
-				String[] parts = key.split("-");
-				for( String part: parts) {
-					if( miliket.equals(part) ) {
-						return true;
-					}					
-				}
+		for(String key: miliketMap.keySet() ) {
+			if( miliket.equals(key) ) {
+				return true;
 			}
 			else {
-				// System.out.println( "Checking " + miliket + " against key: " + key );
-				if( miliket.equals(key) ) {
-					return true;
+				String value = miliketMap.get(key);
+				
+				if( value.contains( "-" ) ) {
+					String[] parts = value.split("-");
+					for( String part: parts) {
+						if( miliket.equals(part) ) {
+							return true;
+						}					
+					}
 				}
+				else {
+					if( miliket.equals(value) ) {
+						return true;
+					}
+				}
+				
 			}
 		}
 		return false;
