@@ -77,10 +77,28 @@ public class CheckMiliket {
 			String siltField  = fields[2];
 			
 			map.put( longField, shortField );
-			HashMap<String,String> siltMap = mapBySilt.get( siltField );
-			if( siltMap != null)
-				// update this later to parse siltField for values like: ዓራራይ፡ወግዕዝ
-				siltMap.put( longField, shortField );
+			
+			if ( siltField.contains( "፡ወ")) {
+				String[] parts = siltField.split("፡ወ");
+				for( String part: parts) {
+					HashMap<String,String> siltMap = mapBySilt.get( part );
+					if( siltMap == null ) {
+						System.err.println( "Unrecognized silt, skipping: " + part );
+					}
+					else {
+						siltMap.put( longField, shortField );
+					}
+				}	
+			}
+			else {
+				HashMap<String,String> siltMap = mapBySilt.get( siltField );
+				if( siltMap == null ) {
+					System.err.println( "Unrecognized silt, skipping: " + siltField );
+				}
+				else {
+					siltMap.put( longField, shortField );
+				}
+			}
 		}
 		
 		map.put( "አንብር", "ር" );
@@ -95,9 +113,11 @@ public class CheckMiliket {
 	public CheckMiliket() {
 		try {
 			readMap( "ድጓ", DiguaMiliket, DiguaMiliketBySilt, "DiguaMiliket.txt" );
+			/*
 			readMap( "ጾመ፡ድጓ", TsomeDiguaMiliket, TsomeDiguaMiliketBySilt, "TsomeDiguaMiliket.txt" );
 			readMap( "ምዕራፍ", MeerafMiliket, MeerafMiliketBySilt, "MeerafMiliket.txt" );
 			readMap( "ሌላቸው፡በምሕፃረ፡ቃል", LeilaMiliket, LeilaMiliketBySilt, "LeilaMiliket.txt" );
+			*/
 		}
 		catch(Exception ex) {
 			System.err.println( ex );
@@ -121,10 +141,21 @@ public class CheckMiliket {
 	    }
 
 		for(String key: miliketMap.keySet() ) {
+
 			if( miliket.equals(key) ) {
 				return true;
 			}
-			else {
+			if( key.contains( "፡" ) ) {
+				String[] parts = key.split("፡");
+				for( String part: parts) {
+					if( miliket.equals(part) ) {
+						return true;
+					}					
+				}	
+			}
+			
+			// Did not match key, try value:
+
 				String value = miliketMap.get(key);
 				
 				if( value.contains( "-" ) ) {
@@ -142,7 +173,7 @@ public class CheckMiliket {
 				}
 				
 			}
-		}
+		
 		return false;
 	}
 	
