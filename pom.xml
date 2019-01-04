@@ -10,12 +10,17 @@
 	<groupId>geez.org</groupId>
 	<artifactId>ZaimaCorrect</artifactId>
 	<version>0.1.0-SNAPSHOT</version>
-	<name>Word DOCX Zaima Corrector</name>
+	<name>Word DOCX Zaima Miliket Corrector</name>
 	<dependencies>
 		<dependency>
 			<groupId>org.docx4j</groupId>
 			<artifactId>docx4j</artifactId>
 			<version>6.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.apple</groupId>
+    		<artifactId>AppleJavaExtensions</artifactId>
+    		<version>1.4</version>
 		</dependency>
 	</dependencies>
 
@@ -36,6 +41,8 @@
 					<appendAssemblyId>false</appendAssemblyId>
 				</configuration>
 			</plugin>
+			
+
 		</plugins>
 	</build>
 

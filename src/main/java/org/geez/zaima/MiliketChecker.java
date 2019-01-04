@@ -25,6 +25,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.embed.swing.SwingFXUtils;
+// import java.awt.Taskbar; java 9
  
 public final class MiliketChecker extends Application {
  
@@ -55,6 +57,7 @@ public final class MiliketChecker extends Application {
         stage.setTitle("Zaima Miliket Checker");
         Image logoImage = new Image( ClassLoader.getSystemResourceAsStream("images/geez-org-avatar.png") );
         stage.getIcons().add( logoImage );
+        // revisit for java9 to replace com.apple.eawt below: Taskbar.getTaskbar().setIconImage( logoImage );
 
 
         ComboBox<String> bookMenu = new ComboBox<String>();
@@ -64,6 +67,9 @@ public final class MiliketChecker extends Application {
         	bookMenu.setStyle("-fx-font: 12px \"Kefa\";");
             bookMenu.getItems().addAll( ኹሉም, ድጓ, ጾመ_ድጓ, ምዕራፍ );       
             bookMenu.setValue( ኹሉም );
+            
+            com.apple.eawt.Application.getApplication().setDockIconImage( SwingFXUtils.fromFXImage(logoImage, null) );      
+            
         }
         else if( osName.startsWith("Windows") ) {
         	bookMenu.setStyle("-fx-font: 12px \"Ebrima\";");

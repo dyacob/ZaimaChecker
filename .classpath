@@ -13,6 +13,7 @@
 		</attributes>
 		<accessrules>
 			<accessrule kind="accessible" pattern="javafx/**"/>
+			<accessrule kind="accessible" pattern="com/apple/eawt/**"/>
 		</accessrules>
 	</classpathentry>
 	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
