@@ -113,11 +113,11 @@ public class CheckMiliket {
 	public CheckMiliket() {
 		try {
 			readMap( "ድጓ", DiguaMiliket, DiguaMiliketBySilt, "DiguaMiliket.txt" );
-			/*
+			
 			readMap( "ጾመ፡ድጓ", TsomeDiguaMiliket, TsomeDiguaMiliketBySilt, "TsomeDiguaMiliket.txt" );
 			readMap( "ምዕራፍ", MeerafMiliket, MeerafMiliketBySilt, "MeerafMiliket.txt" );
 			readMap( "ሌላቸው፡በምሕፃረ፡ቃል", LeilaMiliket, LeilaMiliketBySilt, "LeilaMiliket.txt" );
-			*/
+			
 		}
 		catch(Exception ex) {
 			System.err.println( ex );
@@ -167,7 +167,9 @@ public class CheckMiliket {
 					}
 				}
 				else {
+					System.out.println( "Checking [" +  miliket + "]");
 					if( miliket.equals(value) ) {
+						// System.out.println( "Checking Value [" +  miliket + "]: [" + value + "]");
 						return true;
 					}
 				}
@@ -185,8 +187,8 @@ public class CheckMiliket {
 	protected boolean isValidMiliket(String miliket, String book) {
 
 		if( book.equals( "all" ) ) {
-			//for( HashMap<String, String> bookMap: books.values() ) {
 			for( String key: books.keySet() ) {
+				// System.out.println( "Checking Book [" + miliket + "]: " + key);
 				HashMap<String, String>  bookMap = books.get(key);
 				boolean isValid = isValidMiliket( miliket, bookMap );
 				if ( isValid == true ) {
