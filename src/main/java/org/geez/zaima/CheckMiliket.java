@@ -167,7 +167,7 @@ public class CheckMiliket {
 					}
 				}
 				else {
-					System.out.println( "Checking [" +  miliket + "]");
+					// System.out.println( "Checking [" +  miliket + "]");
 					if( miliket.equals(value) ) {
 						// System.out.println( "Checking Value [" +  miliket + "]: [" + value + "]");
 						return true;
