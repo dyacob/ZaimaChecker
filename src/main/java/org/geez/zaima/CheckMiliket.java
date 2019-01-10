@@ -102,8 +102,8 @@ public class CheckMiliket {
 		}
 		
 		map.put( "አንብር", "ር" );
-		map.put( "ድርስ", "ስ" );
-		map.put( "ድርስ2", "ርስ" );
+		map.put( "ድርስ", "ስ|ርስ" );
+		// map.put( "ድርስ2", "ርስ" );
 		map.put( "ሥረዩ", "ረዩ" );
 		
 		
@@ -113,11 +113,9 @@ public class CheckMiliket {
 	public CheckMiliket() {
 		try {
 			readMap( "ድጓ", DiguaMiliket, DiguaMiliketBySilt, "DiguaMiliket.txt" );
-			
 			readMap( "ጾመ፡ድጓ", TsomeDiguaMiliket, TsomeDiguaMiliketBySilt, "TsomeDiguaMiliket.txt" );
 			readMap( "ምዕራፍ", MeerafMiliket, MeerafMiliketBySilt, "MeerafMiliket.txt" );
 			readMap( "ሌላቸው፡በምሕፃረ፡ቃል", LeilaMiliket, LeilaMiliketBySilt, "LeilaMiliket.txt" );
-			
 		}
 		catch(Exception ex) {
 			System.err.println( ex );
@@ -155,26 +153,26 @@ public class CheckMiliket {
 			}
 			
 			// Did not match key, try value:
-
-				String value = miliketMap.get(key);
-				
-				if( value.contains( "-" ) ) {
-					String[] parts = value.split("-");
-					for( String part: parts) {
-						if( miliket.equals(part) ) {
-							return true;
-						}					
-					}
-				}
-				else {
-					// System.out.println( "Checking [" +  miliket + "]");
-					if( miliket.equals(value) ) {
-						// System.out.println( "Checking Value [" +  miliket + "]: [" + value + "]");
+			String value = miliketMap.get(key);
+			
+			// hopefully we don't come into a case containing both tokens
+			if( value.matches( "(.*?)[-|](.*?)" ) ) {
+				String[] parts = value.split("[-\\|]");
+				for( String part: parts) {
+					if( miliket.equals(part) ) {
 						return true;
-					}
+					}					
 				}
-				
 			}
+			else {
+				// System.out.println( "Checking [" +  miliket + "]");
+				if( miliket.equals(value) ) {
+					// System.out.println( "Checking Value [" +  miliket + "]: [" + value + "]");
+					return true;
+				}
+			}
+				
+		}
 		
 		return false;
 	}
