@@ -62,22 +62,6 @@ public final class MiliketChecker extends Application {
 	private boolean recheck = false;
 	
 	
-	private static class FileWrapper {
-		private File file;
-		private SimpleStringProperty name;
-		
-		FileWrapper(File file) {
-			name = new SimpleStringProperty();
-			name.set(file.getName());
-			
-			this.file = file;
-		}
-		
-		public SimpleStringProperty nameProperty() {
-			return name;
-		}
-		
-	}
     private static void configureFileChooser(
     		
             final FileChooser fileChooser) {      
@@ -223,7 +207,7 @@ public final class MiliketChecker extends Application {
 
         
         
-        CheckBox openFilesCheckbox = new CheckBox( "Open file(s) after checking?");
+        CheckBox openFilesCheckbox = new CheckBox( "Open file(s) after\nchecking?");
         openFilesCheckbox.selectedProperty().addListener(new ChangeListener<Boolean>() {
             public void changed(ObservableValue<? extends Boolean> ov,
                 Boolean old_val, Boolean new_val) {
@@ -232,8 +216,8 @@ public final class MiliketChecker extends Application {
         });
         openFilesCheckbox.setSelected(true);
  
-        progressBar = new ProgressBar();
-        progressBar.setProgress( 0 );
+        // progressBar = new ProgressBar();
+        // progressBar.setProgress( 0 );
 
         final GridPane inputGridPane = new GridPane();
 
@@ -273,7 +257,7 @@ public final class MiliketChecker extends Application {
         	String outputFilePath = inputFilePath.replaceAll("\\.docx", "-Checked.docx");
     		File outputFile = new File ( outputFilePath );
 
-    		checker.setProgressBar( progressBar );
+    		// checker.setProgressBar( progressBar );
     		checker.process( miliketSet, inputFile, outputFile );
         }
         catch (Exception ex) {
