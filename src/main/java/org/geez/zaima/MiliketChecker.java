@@ -4,12 +4,13 @@ package org.geez.zaima;
 import java.awt.Desktop;
 
 import java.io.File;
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -31,7 +32,9 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -86,6 +89,24 @@ public final class MiliketChecker extends Application {
                     new FileChooser.ExtensionFilter("*.docx", "*.docx")
                 );
     }
+    private void resetListView(ListView<Label> listView, Button convertButton)
+    {
+        int i = 0;
+        ObservableList<Label> itemList = listView.getItems();
+        for (File file : inputList) {
+        	Label label = itemList.get(i);
+        	label.setText( file.getName() );
+        	label.getStyleClass().clear();
+        	// itemList.set(i, oldValue );
+        	Platform.runLater(() -> listView.refresh() );
+           	listView.fireEvent(new ListView.EditEvent<Label>(listView, ListView.editCommitEvent(), label, i));
+        	i++;
+        }
+        listView.refresh();
+        // it seems no UI refresh happens until this handle method exits
+        // try { Thread.sleep(10000) ; } catch(Exception ex) {} ;    	
+    }
+    
     
     @Override
     public void start(final Stage stage) {
@@ -126,51 +147,40 @@ public final class MiliketChecker extends Application {
         });
         
 
-        ListView<Text> listView = new ListView<Text>();
+        ListView<Label> listView = new ListView<Label>();
         listView.setEditable(false);
         listView.setPrefHeight( 100 );
-        ObservableList<Text> originalData = FXCollections.observableArrayList();
-        ObservableList<Text> data = FXCollections.observableArrayList();
+        ObservableList<Label> data = FXCollections.observableArrayList();
         VBox listVBox = new VBox( listView );
         listView.autosize();
         
         
         final Button convertButton = new Button("Check File(s)");
         convertButton.setDisable( true );
+
         convertButton.setOnAction(
                 new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(final ActionEvent e) {
                         if (inputList != null) {
-                        	if ( recheck == true ) {
-                            	int j = 0;
-                            	ObservableList<Text> itemList = listView.getItems();
-                        		// listView.getItems().setAll( originalData );
-                        		// listView.refresh();
-                        		for (File file : inputList) {
-                                    Text oldValue = itemList.get(j);
-                                    oldValue.setText( originalData.get(j).getText() );
-                                    // System.out.println( "Original Data: " + originalData.get(j).getText() );
-                                    oldValue.getStyleClass().clear();
-                                    itemList.set(j, oldValue );
-                        			listView.fireEvent(new ListView.EditEvent<>(listView, ListView.editCommitEvent(), oldValue, j));
-                        			j++;
-                                }
-                        		listView.refresh();
-                        		// it seems no UI refresh happens until this handle method exits
-                        		// try { Thread.sleep(10000) ; } catch(Exception ex) {} ;
-                        	}
                         	convertButton.setDisable( true );
+                        	// if ( recheck == true ) {
+                        		// resetListView( listView, convertButton );
+                        	// }
                         	int i = 0;
-                            ObservableList<Text> itemList = listView.getItems();
+                            ObservableList<Label> itemList = listView.getItems();
                             for (File file : inputList) {
                             	processFile( file );
-                                Text oldValue = itemList.get(i);
-                                oldValue.setText("\u2713 " + oldValue.getText() );
-                                oldValue.setStyle( "-fx-font-style: italic;" );
-                                itemList.set(i, oldValue );
-                                listView.refresh();
-                        		// listView.fireEvent(new ListView.EditEvent<>(listView, ListView.editCommitEvent(), oldValue, i));
+                                Label label = itemList.get(i);
+                                if ( recheck == true ) { // changes this later when listView refresh is working as expected
+                                	label.setText("\u2713" + label.getText() );
+                                } else {
+                                	label.setText("\u2713 " + label.getText() );
+                                }
+                                label.setStyle( "-fx-font-style: italic;" );
+                                // itemList.set(i, oldValue );
+                                Platform.runLater(() -> listView.refresh() );
+                        		// listView.fireEvent(new ListView.EditEvent<>(listView, ListView.editCommitEvent(), label, i));
                                 i++;
                             }
                             if ( openOutput ) {
@@ -180,8 +190,7 @@ public final class MiliketChecker extends Application {
                             }
                             convertButton.setDisable( false );
                             recheck = true;
-                        }
-                        
+                        }       
                     }
                 }
         );
@@ -200,8 +209,10 @@ public final class MiliketChecker extends Application {
                     inputList = fileChooser.showOpenMultipleDialog( stage );
                     
                     for( File file: inputList) {
-                    	data.add( new Text( file.getName() ) );
-                    	originalData.add( new Text( file.getName() ) );
+                    	Label rowLabel = new Label( file.getName() );
+                    	data.add( rowLabel );
+                    	Tooltip tooltip = new Tooltip( file.getPath() );
+                    	rowLabel.setTooltip( tooltip );
                     } 
                     listView.setItems( data );
                     convertButton.setDisable( false );
