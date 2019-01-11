@@ -143,21 +143,34 @@ public final class MiliketChecker extends Application {
                     public void handle(final ActionEvent e) {
                         if (inputList != null) {
                         	if ( recheck == true ) {
-                        		listView.getItems().setAll( originalData );
+                            	int j = 0;
+                            	ObservableList<Text> itemList = listView.getItems();
+                        		// listView.getItems().setAll( originalData );
+                        		// listView.refresh();
+                        		for (File file : inputList) {
+                                    Text oldValue = itemList.get(j);
+                                    oldValue.setText( originalData.get(j).getText() );
+                                    // System.out.println( "Original Data: " + originalData.get(j).getText() );
+                                    oldValue.getStyleClass().clear();
+                                    itemList.set(j, oldValue );
+                        			listView.fireEvent(new ListView.EditEvent<>(listView, ListView.editCommitEvent(), oldValue, j));
+                        			j++;
+                                }
                         		listView.refresh();
-                        		try { Thread.sleep(1000) ; } catch(Exception ex) {} ;
-                        		
+                        		// it seems no UI refresh happens until this handle method exits
+                        		// try { Thread.sleep(10000) ; } catch(Exception ex) {} ;
                         	}
                         	convertButton.setDisable( true );
                         	int i = 0;
+                            ObservableList<Text> itemList = listView.getItems();
                             for (File file : inputList) {
                             	processFile( file );
-                                ObservableList<Text> itemList = listView.getItems();
                                 Text oldValue = itemList.get(i);
                                 oldValue.setText("\u2713 " + oldValue.getText() );
                                 oldValue.setStyle( "-fx-font-style: italic;" );
                                 itemList.set(i, oldValue );
                                 listView.refresh();
+                        		// listView.fireEvent(new ListView.EditEvent<>(listView, ListView.editCommitEvent(), oldValue, i));
                                 i++;
                             }
                             if ( openOutput ) {
@@ -251,10 +264,6 @@ public final class MiliketChecker extends Application {
 
     		checker.setProgressBar( progressBar );
     		checker.process( miliketSet, inputFile, outputFile );
-    		
-    		// if ( openOutput ) {
-    		//	desktop.open( outputFile );
-    		// }
         }
         catch (Exception ex) {
         	Logger.getLogger( MiliketChecker.class.getName() ).log( Level.SEVERE, null, ex );
