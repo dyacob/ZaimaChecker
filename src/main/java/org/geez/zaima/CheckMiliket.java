@@ -14,6 +14,11 @@ import org.docx4j.wml.R;
 import org.docx4j.wml.RPr;
 import org.docx4j.wml.RFonts;
 import org.docx4j.wml.Text;
+
+import javafx.application.Platform;
+import javafx.concurrent.Task;
+import javafx.scene.control.ProgressBar;
+
 import org.docx4j.wml.CTRuby;
 import org.docx4j.wml.CTRubyContent;
 import org.docx4j.wml.Color;
@@ -52,6 +57,10 @@ public class CheckMiliket {
 	private Pattern Qirts = Pattern.compile( "[᎐᎔᎗᎓᎒᎑᎙᎕᎖᎘\\s]+" );
 	private String bookFlag = "all";
 
+	private ProgressBar progressBar = null;
+	public void setProgressBar( ProgressBar progressBar ) {
+		this.progressBar = progressBar;
+	}
 	
 	private void readMap(String book, HashMap<String,String> map, HashMap<String, HashMap<String,String>> mapBySilt, String fileName ) throws UnsupportedEncodingException, IOException {
 
@@ -214,58 +223,110 @@ public class CheckMiliket {
 		return isValidMiliket( miliket, siltMap );
 	}
 	
-	public void processObjects( final JaxbXmlPart<?> part) throws Docx4JException
+	public void processObjectsWithProgressBar( final JaxbXmlPart<?> part) throws Docx4JException
 	{
 				
 			ClassFinder finder = new ClassFinder( CTRuby.class );
-			new TraversalUtil(part.getContents(), finder);
-		
+			new TraversalUtil(part.getContents(), finder);	
 
-			for (Object o : finder.results) {
-				Object o2 = XmlUtils.unwrap(o);
+			Task task = new Task<Void>() {
+				@Override public Void call() {
+					int objects = finder.results.size();
+					int count = 0;
+					for (Object o : finder.results) {
+						Object o2 = XmlUtils.unwrap(o);
 						
-				// this is ok, provided the results of the Callback
-				// won't be marshalled			
+						// this is ok, provided the results of the Callback
+						// won't be marshalled			
 			
-				if (o2 instanceof org.docx4j.wml.CTRuby) {
-					CTRuby ruby = (org.docx4j.wml.CTRuby)o2;
-					CTRubyContent rt = ruby.getRt();
+						if (o2 instanceof org.docx4j.wml.CTRuby) {
+							CTRuby ruby = (org.docx4j.wml.CTRuby)o2;
+							CTRubyContent rt = ruby.getRt();
 					
 					
-					List<Object> rtObjects = rt.getEGRubyContent();
-					R r = (org.docx4j.wml.R)rtObjects.get(0);
+							List<Object> rtObjects = rt.getEGRubyContent();
+							R r = (org.docx4j.wml.R)rtObjects.get(0);
 
-					List<Object> rObjects = r .getContent();
+							List<Object> rObjects = r .getContent();
 
-					
-			
-					for ( Object x : rObjects ) {
-						Object x2 = XmlUtils.unwrap(x);
-						if ( x2 instanceof org.docx4j.wml.Text ) {
-								Text txt = (org.docx4j.wml.Text)x2;
-								// this line is here for testing, later make the book a command line parameter
-								if(! isValidMiliket( txt.getValue() ) ) {
-									// System.out.println( "Setting error for: " + txt.getValue() );
-									setError(r);
-								}
+								
+							for ( Object x : rObjects ) {
+								Object x2 = XmlUtils.unwrap(x);
+								if ( x2 instanceof org.docx4j.wml.Text ) {
+									Text txt = (org.docx4j.wml.Text)x2;
+									// this line is here for testing, later make the book a command line parameter
+									if(! isValidMiliket( txt.getValue() ) ) {
+										setError(r);
+									}
 				
-						}
-						else {
-							// System.err.println( "Found: " + x2.getClass() );
-						}
-						
-
-					}
+								}
+								else {
+									// System.err.println( "Found: " + x2.getClass() );
+								}
+							}
 					
 
-				} else {
-					System.err.println( XmlUtils.marshaltoString(o, true, true) );
+						} else {
+							System.err.println( XmlUtils.marshaltoString(o, true, true) );
+						}
+				
+						count++;
+						//final double progress = count / objects;
+						updateProgress(count, objects);
+						// Platform.runLater(() -> progressBar.setProgress( progress ) ); 
+						// progressBar.setProgress( progress );
+					}
+					return null;
 				}
-			}
-   
+			};
+			this.progressBar.progressProperty().bind( task.progressProperty() );
+			new Thread(task).start();
 
 	}
 
+	public void processObjects( final JaxbXmlPart<?> part) throws Docx4JException
+	{
+			
+		ClassFinder finder = new ClassFinder( CTRuby.class );
+		new TraversalUtil(part.getContents(), finder);
+	
+
+		for (Object o : finder.results) {
+			Object o2 = XmlUtils.unwrap(o);
+					
+			// this is ok, provided the results of the Callback
+			// won't be marshalled			
+		
+			if (o2 instanceof org.docx4j.wml.CTRuby) {
+				CTRuby ruby = (org.docx4j.wml.CTRuby)o2;
+				CTRubyContent rt = ruby.getRt();	
+				
+				List<Object> rtObjects = rt.getEGRubyContent();
+				R r = (org.docx4j.wml.R)rtObjects.get(0);
+
+				List<Object> rObjects = r .getContent();		
+				for ( Object x : rObjects ) {
+					Object x2 = XmlUtils.unwrap(x);
+					if ( x2 instanceof org.docx4j.wml.Text ) {
+							Text txt = (org.docx4j.wml.Text)x2;
+							// this line is here for testing, later make the book a command line parameter
+							if(! isValidMiliket( txt.getValue() ) ) {
+								// System.out.println( "Setting error for: " + txt.getValue() );
+								setError(r);
+							}
+					}
+					else {
+						// System.err.println( "Found: " + x2.getClass() );
+					}
+				}
+				
+			} else {
+				System.err.println( XmlUtils.marshaltoString(o, true, true) );
+			}
+			
+		}
+
+	}
 
 	public void setMiliketSet( String miliketSet )
 	{

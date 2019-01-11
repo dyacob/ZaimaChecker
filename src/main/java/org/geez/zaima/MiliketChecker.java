@@ -10,19 +10,34 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.application.Application;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.embed.swing.SwingFXUtils;
@@ -39,7 +54,27 @@ public final class MiliketChecker extends Application {
 	private String miliketSet = ኹሉም; // alphabetic based default
 	private boolean openOutput = true;
 	private List<File>  inputList = null;
+	private ProgressBar progressBar = null;
 	
+	private boolean recheck = false;
+	
+	
+	private static class FileWrapper {
+		private File file;
+		private SimpleStringProperty name;
+		
+		FileWrapper(File file) {
+			name = new SimpleStringProperty();
+			name.set(file.getName());
+			
+			this.file = file;
+		}
+		
+		public SimpleStringProperty nameProperty() {
+			return name;
+		}
+		
+	}
     private static void configureFileChooser(
     		
             final FileChooser fileChooser) {      
@@ -58,6 +93,7 @@ public final class MiliketChecker extends Application {
         Image logoImage = new Image( ClassLoader.getSystemResourceAsStream("images/geez-org-avatar.png") );
         stage.getIcons().add( logoImage );
         // revisit for java9 to replace com.apple.eawt below: Taskbar.getTaskbar().setIconImage( logoImage );
+        final Label label = new Label( "ዜማ ምልእክት Checker" );
 
 
         ComboBox<String> bookMenu = new ComboBox<String>();
@@ -67,6 +103,7 @@ public final class MiliketChecker extends Application {
         	bookMenu.setStyle("-fx-font: 12px \"Kefa\";");
             bookMenu.getItems().addAll( ኹሉም, ድጓ, ጾመ_ድጓ, ምዕራፍ );       
             bookMenu.setValue( ኹሉም );
+            label.setStyle("-fx-font: 24px \"Kefa\";");
             
             com.apple.eawt.Application.getApplication().setDockIconImage( SwingFXUtils.fromFXImage(logoImage, null) );      
             
@@ -75,7 +112,7 @@ public final class MiliketChecker extends Application {
         	bookMenu.setStyle("-fx-font: 12px \"Ebrima\";");
             bookMenu.getItems().addAll( ኹሉም, ድጓ, ጾመ_ድጓ, ምዕራፍ );       
             bookMenu.setValue( ኹሉም );
-        	
+            label.setStyle("-fx-font: 24px \"Ebrima\";");
         }
         else {
         	bookMenu.getItems().addAll( "All", "Digua" , "Tsome Digua" , "Me'eraf" );       
@@ -88,6 +125,15 @@ public final class MiliketChecker extends Application {
             } 
         });
         
+
+        ListView<Text> listView = new ListView<Text>();
+        listView.setEditable(false);
+        listView.setPrefHeight( 100 );
+        ObservableList<Text> originalData = FXCollections.observableArrayList();
+        ObservableList<Text> data = FXCollections.observableArrayList();
+        VBox listVBox = new VBox( listView );
+        listView.autosize();
+        
         
         final Button convertButton = new Button("Check File(s)");
         convertButton.setDisable( true );
@@ -96,12 +142,33 @@ public final class MiliketChecker extends Application {
                     @Override
                     public void handle(final ActionEvent e) {
                         if (inputList != null) {
+                        	if ( recheck == true ) {
+                        		listView.getItems().setAll( originalData );
+                        		listView.refresh();
+                        		try { Thread.sleep(1000) ; } catch(Exception ex) {} ;
+                        		
+                        	}
+                        	convertButton.setDisable( true );
+                        	int i = 0;
                             for (File file : inputList) {
-                                openFile( file );
+                            	processFile( file );
+                                ObservableList<Text> itemList = listView.getItems();
+                                Text oldValue = itemList.get(i);
+                                oldValue.setText("\u2713 " + oldValue.getText() );
+                                oldValue.setStyle( "-fx-font-style: italic;" );
+                                itemList.set(i, oldValue );
+                                listView.refresh();
+                                i++;
                             }
+                            if ( openOutput ) {
+                            	for (File file : inputList) {
+                            		openFile( file );
+                            	}
+                            }
+                            convertButton.setDisable( false );
+                            recheck = true;
                         }
-                        inputList = null;
-                        convertButton.setDisable( true );
+                        
                     }
                 }
         );
@@ -109,13 +176,21 @@ public final class MiliketChecker extends Application {
 
         final Button openFilesButton  = new Button("Select Files...");
         final FileChooser fileChooser = new FileChooser();
+        
         openFilesButton.setOnAction(
             new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(final ActionEvent e) {
+                	listView.getItems().clear();
+                	recheck = false;
                 	configureFileChooser(fileChooser);    
                     inputList = fileChooser.showOpenMultipleDialog( stage );
                     
+                    for( File file: inputList) {
+                    	data.add( new Text( file.getName() ) );
+                    	originalData.add( new Text( file.getName() ) );
+                    } 
+                    listView.setItems( data );
                     convertButton.setDisable( false );
                 }
             }
@@ -123,7 +198,7 @@ public final class MiliketChecker extends Application {
 
         
         
-        CheckBox openFilesCheckbox = new CheckBox( "Open file(s)\nafter checking?");
+        CheckBox openFilesCheckbox = new CheckBox( "Open file(s) after checking?");
         openFilesCheckbox.selectedProperty().addListener(new ChangeListener<Boolean>() {
             public void changed(ObservableValue<? extends Boolean> ov,
                 Boolean old_val, Boolean new_val) {
@@ -132,21 +207,34 @@ public final class MiliketChecker extends Application {
         });
         openFilesCheckbox.setSelected(true);
  
+        progressBar = new ProgressBar();
+        progressBar.setProgress( 0 );
+
         final GridPane inputGridPane = new GridPane();
  
-        GridPane.setConstraints(bookMenu, 0, 0);
-        GridPane.setConstraints(openFilesButton, 1, 0);
-        GridPane.setConstraints(openFilesCheckbox, 0, 1);
-        GridPane.setConstraints(convertButton, 1, 1);
+        GridPane.setConstraints(label, 0, 0, 2, 1);
+        GridPane.setConstraints(bookMenu, 0, 1);               GridPane.setConstraints(openFilesButton, 1, 1);
+        GridPane.setHalignment(bookMenu, HPos.LEFT);           GridPane.setHalignment(openFilesButton, HPos.RIGHT);
+
+        GridPane.setConstraints(listVBox, 0, 2, 2, 1);
+        GridPane.setConstraints(openFilesCheckbox, 0, 3);      GridPane.setConstraints(convertButton, 1, 3);
+        GridPane.setHalignment(openFilesCheckbox, HPos.LEFT);  GridPane.setHalignment(convertButton, HPos.RIGHT);
+        //  GridPane.setConstraints(progressBar, 0, 2, 2, 1);
+
+        ColumnConstraints col1 = new ColumnConstraints();
+        col1.setPercentWidth(60);
+        inputGridPane.getColumnConstraints().addAll(col1);
+
+        
         inputGridPane.setHgap(6);
         inputGridPane.setVgap(6);
-        inputGridPane.getChildren().addAll(bookMenu, openFilesButton, openFilesCheckbox, convertButton);
+        inputGridPane.getChildren().addAll(label,openFilesButton, bookMenu, listVBox, openFilesCheckbox, convertButton);
  
         final Pane rootGroup = new VBox(12);
         rootGroup.getChildren().addAll(inputGridPane);
         rootGroup.setPadding( new Insets(12, 12, 12, 12) );
  
-        stage.setScene(new Scene(rootGroup));
+        stage.setScene( new Scene(rootGroup, 320, 250) );
         stage.show();
     }
  
@@ -155,20 +243,35 @@ public final class MiliketChecker extends Application {
     }
  
     CheckMiliket checker = new CheckMiliket();
+    private void processFile(File inputFile) {
+        try {
+        	String inputFilePath = inputFile.getPath();
+        	String outputFilePath = inputFilePath.replaceAll("\\.docx", "-Checked.docx");
+    		File outputFile = new File ( outputFilePath );
+
+    		checker.setProgressBar( progressBar );
+    		checker.process( miliketSet, inputFile, outputFile );
+    		
+    		// if ( openOutput ) {
+    		//	desktop.open( outputFile );
+    		// }
+        }
+        catch (Exception ex) {
+        	Logger.getLogger( MiliketChecker.class.getName() ).log( Level.SEVERE, null, ex );
+        }
+    }
+ 
     private void openFile(File inputFile) {
         try {
         	String inputFilePath = inputFile.getPath();
         	String outputFilePath = inputFilePath.replaceAll("\\.docx", "-Checked.docx");
     		File outputFile = new File ( outputFilePath );
 
-		checker.process( miliketSet, inputFile, outputFile );
-    		
-		if ( openOutput ) {
-	  	  desktop.open( outputFile );
-		}
-	}
-	catch (Exception ex) {
-		Logger.getLogger( MiliketChecker.class.getName() ).log( Level.SEVERE, null, ex );
-	}
+    		desktop.open( outputFile );
+        }
+        catch (Exception ex) {
+        	Logger.getLogger( MiliketChecker.class.getName() ).log( Level.SEVERE, null, ex );
+        }
     }
+    
 }
