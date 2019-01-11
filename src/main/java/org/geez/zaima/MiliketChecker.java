@@ -150,6 +150,7 @@ public final class MiliketChecker extends Application {
         ListView<Label> listView = new ListView<Label>();
         listView.setEditable(false);
         listView.setPrefHeight( 100 );
+        listView.setPrefWidth( 280 );
         ObservableList<Label> data = FXCollections.observableArrayList();
         VBox listVBox = new VBox( listView );
         listView.autosize();
@@ -235,7 +236,7 @@ public final class MiliketChecker extends Application {
         progressBar.setProgress( 0 );
 
         final GridPane inputGridPane = new GridPane();
- 
+
         GridPane.setConstraints(label, 0, 0, 2, 1);
         GridPane.setConstraints(bookMenu, 0, 1);               GridPane.setConstraints(openFilesButton, 1, 1);
         GridPane.setHalignment(bookMenu, HPos.LEFT);           GridPane.setHalignment(openFilesButton, HPos.RIGHT);
@@ -248,7 +249,6 @@ public final class MiliketChecker extends Application {
         ColumnConstraints col1 = new ColumnConstraints();
         col1.setPercentWidth(60);
         inputGridPane.getColumnConstraints().addAll(col1);
-
         
         inputGridPane.setHgap(6);
         inputGridPane.setVgap(6);
@@ -258,7 +258,7 @@ public final class MiliketChecker extends Application {
         rootGroup.getChildren().addAll(inputGridPane);
         rootGroup.setPadding( new Insets(12, 12, 12, 12) );
  
-        stage.setScene( new Scene(rootGroup, 320, 250) );
+        stage.setScene( new Scene(rootGroup, 300, 250) );
         stage.show();
     }
  
