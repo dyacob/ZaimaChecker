@@ -62,16 +62,14 @@ public final class MiliketChecker extends Application {
 	private boolean recheck = false;
 	
 	
-    private static void configureFileChooser(
-    		
-            final FileChooser fileChooser) {      
-                fileChooser.setTitle("View Word Files");
-                fileChooser.setInitialDirectory(
-                    new File(System.getProperty("user.home"))
-                );                 
-                fileChooser.getExtensionFilters().add(
-                    new FileChooser.ExtensionFilter("*.docx", "*.docx")
-                );
+    private static void configureFileChooser( final FileChooser fileChooser ) {      
+    	fileChooser.setTitle("View Word Files");
+        fileChooser.setInitialDirectory(
+        		new File( System.getProperty("user.home") )
+        );                 
+        fileChooser.getExtensionFilters().add(
+        		new FileChooser.ExtensionFilter("*.docx", "*.docx")
+        );
     }
     private void resetListView(ListView<Label> listView, Button convertButton)
     {
@@ -193,14 +191,16 @@ public final class MiliketChecker extends Application {
                 	configureFileChooser(fileChooser);    
                     inputList = fileChooser.showOpenMultipleDialog( stage );
                     
-                    for( File file: inputList) {
-                    	Label rowLabel = new Label( file.getName() );
-                    	data.add( rowLabel );
-                    	Tooltip tooltip = new Tooltip( file.getPath() );
-                    	rowLabel.setTooltip( tooltip );
-                    } 
-                    listView.setItems( data );
-                    convertButton.setDisable( false );
+                    if( inputList != null ) {
+                    	for( File file: inputList) {
+                    		Label rowLabel = new Label( file.getName() );
+                    		data.add( rowLabel );
+                    		Tooltip tooltip = new Tooltip( file.getPath() );
+                    		rowLabel.setTooltip( tooltip );
+                    	} 
+                    	listView.setItems( data );
+                    	convertButton.setDisable( false );
+                    }
                 }
             }
         );
