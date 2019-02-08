@@ -48,6 +48,12 @@ public class CheckMiliket {
 	private HashMap<String,String> MeerafMiliket = new HashMap<String,String>();
 	private HashMap<String, HashMap<String,String>> MeerafMiliketBySilt = new HashMap< String, HashMap<String,String> >();
 	
+	private HashMap<String,String> ZiqMiliket = new HashMap<String,String>();
+	private HashMap<String, HashMap<String,String>> ZiqMiliketBySilt = new HashMap< String, HashMap<String,String> >();
+	
+	private HashMap<String,String> ZimarieMiliket = new HashMap<String,String>();
+	private HashMap<String, HashMap<String,String>> ZimarieMiliketBySilt = new HashMap< String, HashMap<String,String> >();
+	
 	private HashMap<String,String> LeilaMiliket = new HashMap<String,String>();
 	private HashMap<String, HashMap<String,String>> LeilaMiliketBySilt = new HashMap< String, HashMap<String,String> >();
 	
@@ -76,7 +82,9 @@ public class CheckMiliket {
 		books.put( book, map );
 		booksByMiliket.put( book, mapBySilt );
 		
+		int lineNumber = 0;
 		while ( (line = ruleFile.readLine()) != null) {
+			lineNumber++;
 			if ( line.trim().equals("") || line.charAt(0) == '#' ) {
 				continue;
 			}
@@ -92,7 +100,7 @@ public class CheckMiliket {
 				for( String part: parts) {
 					HashMap<String,String> siltMap = mapBySilt.get( part );
 					if( siltMap == null ) {
-						System.err.println( "Unrecognized silt, skipping: " + part );
+						System.err.println( "Unrecognized silt, skipping: " + part + " on line " + lineNumber + " of " + fileName );
 					}
 					else {
 						siltMap.put( longField, shortField );
@@ -102,7 +110,7 @@ public class CheckMiliket {
 			else {
 				HashMap<String,String> siltMap = mapBySilt.get( siltField );
 				if( siltMap == null ) {
-					System.err.println( "Unrecognized silt, skipping: " + siltField );
+					System.err.println( "Unrecognized silt, skipping: " + siltField + " on line " + lineNumber + " of " + fileName );
 				}
 				else {
 					siltMap.put( longField, shortField );
@@ -124,6 +132,8 @@ public class CheckMiliket {
 			readMap( "ድጓ", DiguaMiliket, DiguaMiliketBySilt, "DiguaMiliket.txt" );
 			readMap( "ጾመ፡ድጓ", TsomeDiguaMiliket, TsomeDiguaMiliketBySilt, "TsomeDiguaMiliket.txt" );
 			readMap( "ምዕራፍ", MeerafMiliket, MeerafMiliketBySilt, "MeerafMiliket.txt" );
+			readMap( "ዚቅ", ZiqMiliket, ZiqMiliketBySilt, "ZiqMiliket.txt" );
+			readMap( "ዝማሬ", ZimarieMiliket, ZimarieMiliketBySilt, "ZimarieMiliket.txt" );
 			readMap( "ሌላቸው፡በምሕፃረ፡ቃል", LeilaMiliket, LeilaMiliketBySilt, "LeilaMiliket.txt" );
 		}
 		catch(Exception ex) {

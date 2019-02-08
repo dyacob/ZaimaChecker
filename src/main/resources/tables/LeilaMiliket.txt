@@ -22,3 +22,5 @@
 ጓሮ,ጓሮ,ግዕዝ
 ፅብረዓ,ፅብረዓ,ግዕዝ
 ፋዕ፡ግፋ,ፋዕ,ግዕዝ
+# Additions found during correction
+ዙር,ዙ,ዕዝል
