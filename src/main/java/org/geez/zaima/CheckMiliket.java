@@ -93,7 +93,12 @@ public class CheckMiliket {
 			String shortField = fields[1];
 			String siltField  = fields[2];
 			
-			map.put( longField, shortField );
+			if( map.containsKey( longField) ) {
+				map.put( longField + "-" + siltField, shortField ); // this should be unique
+			}
+			else {
+				map.put( longField, shortField );
+			}
 			
 			if ( siltField.contains( "፡ወ")) {
 				String[] parts = siltField.split("፡ወ");
