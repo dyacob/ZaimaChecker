@@ -57,6 +57,9 @@ public class CheckMiliket {
 	private HashMap<String,String> LeilaMiliket = new HashMap<String,String>();
 	private HashMap<String, HashMap<String,String>> LeilaMiliketBySilt = new HashMap< String, HashMap<String,String> >();
 	
+	private HashMap<String,String> ToBeDeterminedMiliket = new HashMap<String,String>();
+	private HashMap<String, HashMap<String,String>> ToBeDeterminedMiliketBySilt = new HashMap< String, HashMap<String,String> >();
+	
 	private Map<String, HashMap<String,String>> books = new HashMap<String,HashMap<String,String>>();
 	private Map<String, HashMap<String, HashMap<String,String>>> booksByMiliket = new HashMap<String, HashMap< String, HashMap<String,String> >>();
 	
@@ -140,6 +143,7 @@ public class CheckMiliket {
 			readMap( "ዚቅ", ZiqMiliket, ZiqMiliketBySilt, "ZiqMiliket.txt" );
 			readMap( "ዝማሬ", ZimarieMiliket, ZimarieMiliketBySilt, "ZimarieMiliket.txt" );
 			readMap( "ሌላቸው፡በምሕፃረ፡ቃል", LeilaMiliket, LeilaMiliketBySilt, "LeilaMiliket.txt" );
+			readMap( "TBD", ToBeDeterminedMiliket, ToBeDeterminedMiliketBySilt, "ToBeDetermined.txt" );
 		}
 		catch(Exception ex) {
 			System.err.println( ex );

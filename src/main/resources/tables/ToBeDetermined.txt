@@ -1,0 +1,6 @@
+# Miliket whose sereyu source needs to be determined
+ዘልፈ,ዘል,ዓራራይ
+ነድ,ነድ,ዕዝል
+ውኵሉ፡ይደመሰስ፡በዮርዳኖስ,ይደ,ዓራራይ
+ተሣፍነድከ,ተሣ-ድከ,ዕዝል
+ወለዳ,ለዳ,ዕዝል
