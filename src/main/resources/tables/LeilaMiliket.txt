@@ -25,4 +25,3 @@
 # Additions found during correction
 ዙር,ዙ,ዕዝል
 አግዳሚ,ሚ,ግዕዝ
-ቡብ,ቡብ,ዓራራይ
