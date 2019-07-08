@@ -12,6 +12,7 @@ import org.docx4j.openpackaging.parts.JaxbXmlPart;
 
 import org.docx4j.wml.R;
 import org.docx4j.wml.RPr;
+import org.docx4j.wml.STRubyAlign;
 import org.docx4j.wml.RFonts;
 import org.docx4j.wml.Text;
 
@@ -20,7 +21,9 @@ import javafx.concurrent.Task;
 import javafx.scene.control.ProgressBar;
 
 import org.docx4j.wml.CTRuby;
+import org.docx4j.wml.CTRubyAlign;
 import org.docx4j.wml.CTRubyContent;
+import org.docx4j.wml.CTRubyPr;
 import org.docx4j.wml.Color;
 
 import java.io.BufferedReader;
@@ -242,7 +245,7 @@ public class CheckMiliket {
 		return isValidMiliket( miliket, siltMap );
 	}
 	
-	public void processObjectsWithProgressBar( final JaxbXmlPart<?> part) throws Docx4JException
+	public void processObjectsWithProgressBar( final JaxbXmlPart<?> part ) throws Docx4JException
 	{
 				
 			ClassFinder finder = new ClassFinder( CTRuby.class );
@@ -303,7 +306,7 @@ public class CheckMiliket {
 
 	}
 
-	public void processObjects( final JaxbXmlPart<?> part) throws Docx4JException
+	public void processObjects( final JaxbXmlPart<?> part, boolean fix121 ) throws Docx4JException
 	{
 			
 		ClassFinder finder = new ClassFinder( CTRuby.class );
@@ -318,7 +321,16 @@ public class CheckMiliket {
 		
 			if (o2 instanceof org.docx4j.wml.CTRuby) {
 				CTRuby ruby = (org.docx4j.wml.CTRuby)o2;
-				CTRubyContent rt = ruby.getRt();	
+				CTRubyContent rt = ruby.getRt();
+				if( fix121 ) {
+					CTRubyPr rpr = ruby.getRubyPr();
+					CTRubyAlign ctAlign = rpr.getRubyAlign();
+					STRubyAlign stAlign = ctAlign.getVal();
+					
+					if( stAlign ==  STRubyAlign.DISTRIBUTE_SPACE) {
+						ctAlign.setVal( STRubyAlign.CENTER );
+					}
+				}
 				
 				List<Object> rtObjects = rt.getEGRubyContent();
 				R r = (org.docx4j.wml.R)rtObjects.get(0);
@@ -376,24 +388,24 @@ public class CheckMiliket {
 		}
 	}
 	
-	public void process( String miliketSet, final File inputFile, final File outputFile )
+	public void process( String miliketSet, final File inputFile, final File outputFile, boolean fix121 )
 	{
 		setMiliketSet( miliketSet );
-		process( inputFile, outputFile );
+		process( inputFile, outputFile, fix121 );
 	}
 	
 	
-	public void process( final File inputFile, final File outputFile )
+	public void process( final File inputFile, final File outputFile, boolean fix121 )
 	{
 
 		try {
 			WordprocessingMLPackage wordMLPackage = WordprocessingMLPackage.load( inputFile );		
 			MainDocumentPart documentPart = wordMLPackage.getMainDocumentPart();
-       		processObjects( documentPart );
+       		processObjects( documentPart, fix121 );
             
        		if( documentPart.hasFootnotesPart() ) {
 	            FootnotesPart footnotesPart = documentPart.getFootnotesPart();
-       			processObjects( footnotesPart );
+       			processObjects( footnotesPart, fix121 );
        		}
 
    
@@ -421,7 +433,7 @@ public class CheckMiliket {
 		
 		CheckMiliket converter = new CheckMiliket();		
 		converter.setMiliketSet( miliketSet );
-		converter.process( inputFile, outputFile );
+		converter.process( inputFile, outputFile, false );
 
 
 	}

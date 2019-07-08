@@ -56,6 +56,7 @@ public final class MiliketChecker extends Application {
 
 	private String miliketSet = ኹሉም; // alphabetic based default
 	private boolean openOutput = true;
+	private boolean fix121 = false;
 	private List<File>  inputList = null;
 	private ProgressBar progressBar = null;
 	
@@ -215,6 +216,15 @@ public final class MiliketChecker extends Application {
             }
         });
         openFilesCheckbox.setSelected(true);
+        
+        CheckBox fix121Checkbox = new CheckBox( "Set \"1-2-1\" to \"centered\"?");
+        fix121Checkbox.selectedProperty().addListener(new ChangeListener<Boolean>() {
+            public void changed(ObservableValue<? extends Boolean> ov,
+                Boolean old_val, Boolean new_val) {
+                    fix121 = new_val.booleanValue();
+            }
+        });
+        fix121Checkbox.setSelected(false);
  
         // progressBar = new ProgressBar();
         // progressBar.setProgress( 0 );
@@ -228,6 +238,8 @@ public final class MiliketChecker extends Application {
         GridPane.setConstraints(listVBox, 0, 2, 2, 1);
         GridPane.setConstraints(openFilesCheckbox, 0, 3);      GridPane.setConstraints(convertButton, 1, 3);
         GridPane.setHalignment(openFilesCheckbox, HPos.LEFT);  GridPane.setHalignment(convertButton, HPos.RIGHT);
+        GridPane.setConstraints(fix121Checkbox, 0, 4);
+        GridPane.setHalignment(fix121Checkbox, HPos.LEFT);  
         //  GridPane.setConstraints(progressBar, 0, 2, 2, 1);
 
         ColumnConstraints col1 = new ColumnConstraints();
@@ -236,7 +248,7 @@ public final class MiliketChecker extends Application {
         
         inputGridPane.setHgap(6);
         inputGridPane.setVgap(6);
-        inputGridPane.getChildren().addAll(label,openFilesButton, bookMenu, listVBox, openFilesCheckbox, convertButton);
+        inputGridPane.getChildren().addAll(label, openFilesButton, bookMenu, listVBox, openFilesCheckbox, fix121Checkbox, convertButton);
  
         final Pane rootGroup = new VBox(12);
         rootGroup.getChildren().addAll(inputGridPane);
@@ -258,7 +270,7 @@ public final class MiliketChecker extends Application {
     		File outputFile = new File ( outputFilePath );
 
     		// checker.setProgressBar( progressBar );
-    		checker.process( miliketSet, inputFile, outputFile );
+    		checker.process( miliketSet, inputFile, outputFile, fix121 );
         }
         catch (Exception ex) {
         	Logger.getLogger( MiliketChecker.class.getName() ).log( Level.SEVERE, null, ex );
