@@ -1,4 +1,4 @@
-package org.geez.zaima;
+package org.geez.ui;
 
 
 import java.awt.Desktop;
@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.geez.zaima.CheckMiliket;
 
 import javafx.application.Application;
 import javafx.application.Platform;
