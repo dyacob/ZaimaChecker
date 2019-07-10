@@ -31,7 +31,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>org.geez.zaima.MiliketChecker</mainClass>
+							<mainClass>org.geez.ui.MiliketChecker</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
