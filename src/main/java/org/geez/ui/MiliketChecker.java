@@ -8,7 +8,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.print.attribute.standard.MediaSize.Other;
+
 import org.geez.zaima.CheckMiliket;
+import org.opendope.questions.Response.Fixed.Item;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -26,7 +29,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ColorPicker;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -44,6 +50,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
  
@@ -89,6 +97,45 @@ public final class MiliketChecker extends Application {
         	i++;
         }
         listView.refresh();    	
+    }
+    public Dialog<Color> colorInput(String action, String question, Color _default) {
+        Dialog<Color> dialog = new Dialog<>();
+        dialog.setTitle(action);
+        dialog.setHeaderText(question);
+        ColorPicker picker = new ColorPicker(_default);
+
+        dialog.getDialogPane().setContent(picker);
+
+        dialog.getDialogPane().getButtonTypes().addAll(
+                ButtonType.OK, ButtonType.CANCEL);
+
+        dialog.setResultConverter(buttonType -> {
+            if (buttonType.equals(ButtonType.OK)) {
+            	// setRubricateColor( silt, picker.getValue() );
+                return picker.getValue();
+            } else {
+                return null;
+            }
+        });
+        return dialog;
+    }
+     
+    private Dialog<String> createColorDialog() {
+    	Dialog<String>  dialog = new Dialog<>();
+    	VBox vbox = new VBox();
+        final ColorPicker colorPicker = new ColorPicker();
+        colorPicker.setValue(Color.RED);
+
+        final Text text = new Text("Color picker:");
+        text.setFill(colorPicker.getValue());
+
+        colorPicker.setOnAction((ActionEvent t) -> {
+          text.setFill(colorPicker.getValue());
+        });
+
+        vbox.getChildren().addAll( text, colorPicker);
+    	//dialog.getDialogPane().get .getButtonTypes().add(vbox);
+    	return dialog;
     }
     
     
@@ -258,19 +305,51 @@ public final class MiliketChecker extends Application {
         checkItem3.setSelected(true);
 
         checkMenu.getItems().addAll( checkItem1, checkItem2, checkItem3 );
-        Menu stripeMenu = new Menu( "Stripe" );
-        RadioMenuItem stripeItem1 = new RadioMenuItem( ድጓ );
-        RadioMenuItem stripeItem2 = new RadioMenuItem( ጾመ_ድጓ );
-        RadioMenuItem stripeItem3 = new RadioMenuItem( ምዕራፍ );
-        ToggleGroup stripeGroup = new ToggleGroup();
-        stripeItem1.setToggleGroup( stripeGroup );
-        stripeItem2.setToggleGroup( stripeGroup );
-        stripeItem3.setToggleGroup( stripeGroup );
-        stripeItem1.setStyle("-fx-font: 12px \"" + defaultFont + "\";");
-        stripeItem2.setStyle("-fx-font: 12px \""  + defaultFont + "\";");
-        stripeItem3.setStyle("-fx-font: 12px \""  + defaultFont + "\";");
-        stripeMenu.getItems().addAll( stripeItem1, stripeItem2, stripeItem3 );
-  
+        Menu stripeMenu = new Menu( "Rubricate" );
+        Menu geezMenu = new Menu( "ግዕዝ" );
+        Menu izelMenu = new Menu( "ዕዝል" );
+        Menu ararayMenu = new Menu("ዓራራይ" );
+        //፡ToggleGroup stripeGroup = new ToggleGroup();
+        //፡stripeItem1.setToggleGroup( stripeGroup );
+        //፡stripeItem2.setToggleGroup( stripeGroup );
+        //፡stripeItem3.setToggleGroup( stripeGroup );
+        geezMenu.setStyle("-fx-font: 12px \"" + defaultFont + "\";");
+        izelMenu.setStyle("-fx-font: 12px \""  + defaultFont + "\";");
+        ararayMenu.setStyle("-fx-font: 12px \""  + defaultFont + "\";");
+        stripeMenu.getItems().addAll( geezMenu, izelMenu, ararayMenu );
+        // ColorPicker cp = new ColorPicker(Color.BLUE);
+        // stripeItem1.getItems().add( cp );
+        MenuItem geezRed = new MenuItem( "● Red" );
+        geezRed.setStyle( "-fx-text-fill: red;" );
+        MenuItem geezBlue = new MenuItem( "● Blue" );
+        geezBlue.setStyle( "-fx-text-fill: blue;" );
+        MenuItem geezGreen = new MenuItem( "● Green" );
+        geezGreen.setStyle( "-fx-text-fill: green;" );
+        MenuItem geezOther = new MenuItem( "● Other..." );
+        geezMenu.getItems().addAll( geezRed, geezBlue, geezGreen, geezOther );
+
+        MenuItem izelRed = new MenuItem( "● Red" );
+        izelRed.setStyle( "-fx-text-fill: red;" );
+        MenuItem izelBlue = new MenuItem( "● Blue" );
+        izelBlue.setStyle( "-fx-text-fill: blue;" );
+        MenuItem izelGreen = new MenuItem( "● Green" );
+        izelGreen.setStyle( "-fx-text-fill: green;" );
+        MenuItem izelOther = new MenuItem( "● Other..." );
+        izelMenu.getItems().addAll( izelRed, izelBlue, izelGreen, izelOther );
+        
+        MenuItem ararayRed = new MenuItem( "● Red" );
+        ararayRed.setStyle( "-fx-text-fill: red;" );
+        MenuItem ararayBlue = new MenuItem( "● Blue" );
+        ararayBlue.setStyle( "-fx-text-fill: blue;" );
+        MenuItem ararayGreen = new MenuItem( "● Green" );
+        ararayGreen.setStyle( "-fx-text-fill: green;" );
+        MenuItem ararayOther = new MenuItem( "● Other..." );
+        ararayMenu.getItems().addAll( ararayRed, ararayBlue, ararayGreen, ararayOther );
+        
+        geezOther.setOnAction( evt -> {
+        	Dialog<Color> d = colorInput( "Rubrication Color", "Select a Ge'ez Rubrication Color", Color.RED);
+        	d.showAndWait();
+        });
 
         MenuItem fix121MenuItem = new RadioMenuItem( "Set \"1-2-1\" to \"centered\"?" );
         fix121MenuItem.setOnAction( evt -> { fix121 = (fix121) ? false : true ; } );
