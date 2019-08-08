@@ -1,4 +1,4 @@
-package org.geez.zaima;
+package org.geez.ዜማ;
 
 import org.docx4j.TraversalUtil;
 import org.docx4j.XmlUtils;
@@ -36,33 +36,32 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 
-
 public class CheckMiliket {
 
 
 	private HashMap<String,String> DiguaMiliket = new HashMap<String,String>();
-	private HashMap<String, HashMap<String,String>> DiguaMiliketBySilt = new HashMap< String, HashMap<String,String> >();
+	private HashMap<ስልት, HashMap<String,String>> DiguaMiliketBySilt = new HashMap< ስልት, HashMap<String,String> >();
 
 	private HashMap<String,String> TsomeDiguaMiliket = new HashMap<String,String>();
-	private HashMap<String, HashMap<String,String>> TsomeDiguaMiliketBySilt = new HashMap< String, HashMap<String,String> >();
+	private HashMap<ስልት, HashMap<String,String>> TsomeDiguaMiliketBySilt = new HashMap< ስልት, HashMap<String,String> >();
 	
 	private HashMap<String,String> MeerafMiliket = new HashMap<String,String>();
-	private HashMap<String, HashMap<String,String>> MeerafMiliketBySilt = new HashMap< String, HashMap<String,String> >();
+	private HashMap<ስልት, HashMap<String,String>> MeerafMiliketBySilt = new HashMap< ስልት, HashMap<String,String> >();
 	
 	private HashMap<String,String> ZiqMiliket = new HashMap<String,String>();
-	private HashMap<String, HashMap<String,String>> ZiqMiliketBySilt = new HashMap< String, HashMap<String,String> >();
+	private HashMap<ስልት, HashMap<String,String>> ZiqMiliketBySilt = new HashMap< ስልት, HashMap<String,String> >();
 	
 	private HashMap<String,String> ZimarieMiliket = new HashMap<String,String>();
-	private HashMap<String, HashMap<String,String>> ZimarieMiliketBySilt = new HashMap< String, HashMap<String,String> >();
+	private HashMap<ስልት, HashMap<String,String>> ZimarieMiliketBySilt = new HashMap< ስልት, HashMap<String,String> >();
 	
 	private HashMap<String,String> LeilaMiliket = new HashMap<String,String>();
-	private HashMap<String, HashMap<String,String>> LeilaMiliketBySilt = new HashMap< String, HashMap<String,String> >();
+	private HashMap<ስልት, HashMap<String,String>> LeilaMiliketBySilt = new HashMap< ስልት, HashMap<String,String> >();
 	
 	private HashMap<String,String> ToBeDeterminedMiliket = new HashMap<String,String>();
-	private HashMap<String, HashMap<String,String>> ToBeDeterminedMiliketBySilt = new HashMap< String, HashMap<String,String> >();
+	private HashMap<ስልት, HashMap<String,String>> ToBeDeterminedMiliketBySilt = new HashMap< ስልት, HashMap<String,String> >();
 	
 	private Map<String, HashMap<String,String>> books = new HashMap<String,HashMap<String,String>>();
-	private Map<String, HashMap<String, HashMap<String,String>>> booksByMiliket = new HashMap<String, HashMap< String, HashMap<String,String> >>();
+	private Map<String, HashMap<ስልት, HashMap<String,String>>> booksByMiliket = new HashMap<String, HashMap< ስልት, HashMap<String,String> >>();
 	
 	private Pattern Qirts = Pattern.compile( "[᎐᎔᎗᎓᎒᎑᎙᎕᎖᎘\\s]+" );
 	private String bookFlag = "all";
@@ -72,7 +71,7 @@ public class CheckMiliket {
 		this.progressBar = progressBar;
 	}
 	
-	private void readMap(String book, HashMap<String,String> map, HashMap<String, HashMap<String,String>> mapBySilt, String fileName ) throws UnsupportedEncodingException, IOException {
+	private void readMap(String book, HashMap<String,String> map, HashMap<ስልት, HashMap<String,String>> mapBySilt, String fileName ) throws UnsupportedEncodingException, IOException {
 
 		String line;
 
@@ -80,9 +79,9 @@ public class CheckMiliket {
 		InputStream in = classLoader.getResourceAsStream( "tables/" + fileName ); 
 		BufferedReader ruleFile = new BufferedReader( new InputStreamReader(in, "UTF-8") );
 		
-		mapBySilt.put(  "ግዕዝ", new HashMap<String,String>() );
-		mapBySilt.put(  "ዕዝል", new HashMap<String,String>() );
-		mapBySilt.put( "ዓራራይ", new HashMap<String,String>() );
+		mapBySilt.put( ስልት.ግዕዝ, new HashMap<String,String>() );
+		mapBySilt.put( ስልት.ዕዝል, new HashMap<String,String>() );
+		mapBySilt.put( ስልት.ዓራራይ, new HashMap<String,String>() );
 		books.put( book, map );
 		booksByMiliket.put( book, mapBySilt );
 		
@@ -107,7 +106,7 @@ public class CheckMiliket {
 			if ( siltField.contains( "፡ወ")) {
 				String[] parts = siltField.split("፡ወ");
 				for( String part: parts) {
-					HashMap<String,String> siltMap = mapBySilt.get( part );
+					HashMap<String,String> siltMap = mapBySilt.get( ስልት.valueOf( part ) );
 					if( siltMap == null ) {
 						System.err.println( "Unrecognized silt, skipping: " + part + " on line " + lineNumber + " of " + fileName );
 					}
@@ -117,7 +116,7 @@ public class CheckMiliket {
 				}	
 			}
 			else {
-				HashMap<String,String> siltMap = mapBySilt.get( siltField );
+				HashMap<String,String> siltMap = mapBySilt.get( ስልት.valueOf( siltField ) );
 				if( siltMap == null ) {
 					System.err.println( "Unrecognized silt, skipping: " + siltField + " on line " + lineNumber + " of " + fileName );
 				}
@@ -129,7 +128,6 @@ public class CheckMiliket {
 		
 		map.put( "አንብር", "ር" );
 		map.put( "ድርስ", "ስ|ርስ" );
-		// map.put( "ድርስ2", "ርስ" );
 		map.put( "ሥረዩ", "ረዩ" );
 		
 		
@@ -235,9 +233,9 @@ public class CheckMiliket {
 	
 	// For a given book, check miliket for a specific silt
 	// For a given book and silt, check miliket
-	protected boolean isValidMiliket(String miliket, String book, String silt) {
+	protected boolean isValidMiliket(String miliket, String book, ስልት silt) {
 
-		HashMap<String, HashMap<String,String>> siltByBookMap = booksByMiliket.get( book );
+		HashMap<ስልት, HashMap<String,String>> siltByBookMap = booksByMiliket.get( book );
 		HashMap<String, String> siltMap = siltByBookMap.get( silt );
 		
 		return isValidMiliket( miliket, siltMap );
@@ -412,27 +410,6 @@ public class CheckMiliket {
 		catch ( Exception ex ) {
 			System.err.println( ex );
 		}
-
-	}
-	
-
-	public static void main( String[] args ) {
-		if( args.length != 3 ) {
-			System.err.println( "Exactly 3 arguements are expected: <digua|tsome-digua|meeraf|all> <input file> <output file>" );
-			System.exit(0);
-		}
-
-
-		String miliketSet = args[0];
-		String inputFilepath  = System.getProperty("user.dir") + "/" + args[1];
-		String outputFilepath = System.getProperty("user.dir") + "/" + args[2];
-		File inputFile = new File ( inputFilepath );
-		File outputFile = new File ( outputFilepath );
-		
-		CheckMiliket converter = new CheckMiliket();		
-		converter.setMiliketSet( miliketSet );
-		converter.process( inputFile, outputFile, false );
-
 
 	}
 	

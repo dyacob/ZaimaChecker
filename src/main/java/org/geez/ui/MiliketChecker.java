@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 import javax.print.attribute.standard.MediaSize.Other;
 
-import org.geez.zaima.CheckMiliket;
+import org.geez.ዜማ.CheckMiliket;
 import org.opendope.questions.Response.Fixed.Item;
 
 import javafx.application.Application;
@@ -56,7 +56,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
- 
+
+import org.geez.ዜማ.ስልት;
+
 public final class MiliketChecker extends Application {
  
     private Desktop desktop = Desktop.getDesktop();
@@ -74,8 +76,8 @@ public final class MiliketChecker extends Application {
 	private boolean recheck = false;
 	private static final String VERSION = "v0.4.0";
 	private final int APP_HEIGHT = 220, APP_WIDTH = 420;
-	enum Silt { GEEZ, IZEL, ARARAY, ZIR }
-	private Map<Silt,Color> rubricationColors = new HashMap<Silt,Color>();
+
+	private Map<ስልት,Color> rubricationColors = new HashMap<ስልት,Color>();
 
 	
     private static void configureFileChooser( final FileChooser fileChooser ) {      
@@ -103,11 +105,11 @@ public final class MiliketChecker extends Application {
         listView.refresh();    	
     }
     
-    private void setRubricationColor(Silt silt, Color color) {
+    private void setRubricationColor(ስልት silt, Color color) {
     	rubricationColors.put(silt,color);
     }
     
-    private Dialog<Color> colorInput(String action, String question, Color _default, Silt silt) {
+    private Dialog<Color> colorInput(String action, String question, Color _default, ስልት silt) {
         Dialog<Color> dialog = new Dialog<>();
         dialog.setTitle(action);
         dialog.setHeaderText(question);
@@ -120,7 +122,7 @@ public final class MiliketChecker extends Application {
 
         dialog.setResultConverter(buttonType -> {
             if (buttonType.equals(ButtonType.OK)) {
-            	// setRubricateColor( silt, picker.getValue() );
+            	setRubricationColor( silt, picker.getValue() );
                 return picker.getValue();
             } else {
                 return null;
@@ -230,8 +232,8 @@ public final class MiliketChecker extends Application {
         final FileChooser fileChooser = new FileChooser();
         
         // create menu items 
-        final MenuItem fileMenuItem1 = new MenuItem( "Select Files..." ); 
-        fileMenuItem1.setOnAction(
+        final MenuItem fileMenuItem = new MenuItem( "Select Files..." ); 
+        fileMenuItem.setOnAction(
             new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(final ActionEvent e) {
@@ -252,11 +254,10 @@ public final class MiliketChecker extends Application {
                 }
             }
         );
-        fileMenu.getItems().add( fileMenuItem1 ); 
-        fileMenu.getItems().add( new SeparatorMenuItem() );
+        
         MenuItem exitMenuItem = new MenuItem("Exit");
-        exitMenuItem.setOnAction(actionEvent -> Platform.exit());
-        fileMenu.getItems().add( exitMenuItem ); 
+        exitMenuItem.setOnAction( actionEvent -> Platform.exit() );
+        fileMenu.getItems().addAll( fileMenuItem, new SeparatorMenuItem(), exitMenuItem ); 
         
         
         final Menu helpMenu = new Menu( "Help" );
@@ -318,16 +319,12 @@ public final class MiliketChecker extends Application {
         Menu geezMenu = new Menu( "ግዕዝ" );
         Menu izelMenu = new Menu( "ዕዝል" );
         Menu ararayMenu = new Menu("ዓራራይ" );
-        //፡ToggleGroup stripeGroup = new ToggleGroup();
-        //፡stripeItem1.setToggleGroup( stripeGroup );
-        //፡stripeItem2.setToggleGroup( stripeGroup );
-        //፡stripeItem3.setToggleGroup( stripeGroup );
+
         geezMenu.setStyle("-fx-font: 12px \"" + defaultFont + "\";");
         izelMenu.setStyle("-fx-font: 12px \""  + defaultFont + "\";");
         ararayMenu.setStyle("-fx-font: 12px \""  + defaultFont + "\";");
         stripeMenu.getItems().addAll( geezMenu, izelMenu, ararayMenu );
-        // ColorPicker cp = new ColorPicker(Color.BLUE);
-        // stripeItem1.getItems().add( cp );
+
         MenuItem geezRed = new MenuItem( "● Red" );
         geezRed.setStyle( "-fx-text-fill: red;" );
         MenuItem geezBlue = new MenuItem( "● Blue" );
@@ -356,17 +353,17 @@ public final class MiliketChecker extends Application {
         ararayMenu.getItems().addAll( ararayRed, ararayBlue, ararayGreen, ararayOther );
         
         geezOther.setOnAction( evt -> {
-        	Dialog<Color> d = colorInput( "Rubrication Color", "Select a Ge'ez Rubrication Color", Color.RED, Silt.GEEZ);
+        	Dialog<Color> d = colorInput( "Rubrication Color", "Select a Ge'ez Rubrication Color", Color.RED, ስልት.ግዕዝ);
         	d.showAndWait();
         });
         
         izelOther.setOnAction( evt -> {
-        	Dialog<Color> d = colorInput( "Rubrication Color", "Select a Ge'ez Rubrication Color", Color.RED, Silt.IZEL);
+        	Dialog<Color> d = colorInput( "Rubrication Color", "Select a Ge'ez Rubrication Color", Color.RED, ስልት.ዕዝል);
         	d.showAndWait();
         });
         
         ararayOther.setOnAction( evt -> {
-        	Dialog<Color> d = colorInput( "Rubrication Color", "Select a Ge'ez Rubrication Color", Color.RED, Silt.ARARAY);
+        	Dialog<Color> d = colorInput( "Rubrication Color", "Select a Ge'ez Rubrication Color", Color.RED, ስልት.ዓራራይ);
         	d.showAndWait();
         });
 
@@ -386,8 +383,7 @@ public final class MiliketChecker extends Application {
         HBox.setHgrow(spacer, Priority.SOMETIMES);
         HBox menubars = new HBox( leftBar, spacer, rightBar );
         menubars.setAlignment( Pos.CENTER_LEFT );
-        
-        
+            
         
         final BorderPane rootGroup = new BorderPane();
         rootGroup.setTop( menubars );
