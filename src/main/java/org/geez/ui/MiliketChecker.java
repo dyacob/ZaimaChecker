@@ -4,7 +4,9 @@ package org.geez.ui;
 import java.awt.Desktop;
 import java.io.File;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -66,13 +68,15 @@ public final class MiliketChecker extends Application {
 	private String miliketSet = ኹሉም; // alphabetic based default
 	private boolean openOutput = true;
 	private boolean fix121 = false;
-	private List<File>  inputList = null;
+	
 	private List<File> inputFileList = null;
 	
 	private boolean recheck = false;
 	private static final String VERSION = "v0.4.0";
 	private final int APP_HEIGHT = 220, APP_WIDTH = 420;
-	
+	enum Silt { GEEZ, IZEL, ARARAY, ZIR }
+	private Map<Silt,Color> rubricationColors = new HashMap<Silt,Color>();
+
 	
     private static void configureFileChooser( final FileChooser fileChooser ) {      
     	fileChooser.setTitle("View Word Files");
@@ -87,7 +91,7 @@ public final class MiliketChecker extends Application {
     {
         int i = 0;
         ObservableList<Label> itemList = listView.getItems();
-        for (File file : inputList) {
+        for (File file : inputFileList) {
         	Label label = itemList.get(i);
         	label.setText( file.getName() );
         	label.getStyleClass().clear();
@@ -98,7 +102,12 @@ public final class MiliketChecker extends Application {
         }
         listView.refresh();    	
     }
-    public Dialog<Color> colorInput(String action, String question, Color _default) {
+    
+    private void setRubricationColor(Silt silt, Color color) {
+    	rubricationColors.put(silt,color);
+    }
+    
+    private Dialog<Color> colorInput(String action, String question, Color _default, Silt silt) {
         Dialog<Color> dialog = new Dialog<>();
         dialog.setTitle(action);
         dialog.setHeaderText(question);
@@ -171,14 +180,14 @@ public final class MiliketChecker extends Application {
                 new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(final ActionEvent e) {
-                        if (inputList != null) {
+                        if (inputFileList != null) {
                         	convertButton.setDisable( true );
                         	// if ( recheck == true ) {
                         		// resetListView( listView, convertButton );
                         	// }
                         	int i = 0;
                             ObservableList<Label> itemList = listView.getItems();
-                            for (File file : inputList) {
+                            for (File file : inputFileList) {
                             	processFile( file );
                                 Label label = itemList.get(i);
                                 if ( recheck == true ) { // changes this later when listView refresh is working as expected
@@ -193,7 +202,7 @@ public final class MiliketChecker extends Application {
                                 i++;
                             }
                             if ( openOutput ) {
-                            	for (File file : inputList) {
+                            	for (File file : inputFileList) {
                             		openFile( file );
                             	}
                             }
@@ -347,7 +356,17 @@ public final class MiliketChecker extends Application {
         ararayMenu.getItems().addAll( ararayRed, ararayBlue, ararayGreen, ararayOther );
         
         geezOther.setOnAction( evt -> {
-        	Dialog<Color> d = colorInput( "Rubrication Color", "Select a Ge'ez Rubrication Color", Color.RED);
+        	Dialog<Color> d = colorInput( "Rubrication Color", "Select a Ge'ez Rubrication Color", Color.RED, Silt.GEEZ);
+        	d.showAndWait();
+        });
+        
+        izelOther.setOnAction( evt -> {
+        	Dialog<Color> d = colorInput( "Rubrication Color", "Select a Ge'ez Rubrication Color", Color.RED, Silt.IZEL);
+        	d.showAndWait();
+        });
+        
+        ararayOther.setOnAction( evt -> {
+        	Dialog<Color> d = colorInput( "Rubrication Color", "Select a Ge'ez Rubrication Color", Color.RED, Silt.ARARAY);
         	d.showAndWait();
         });
 
