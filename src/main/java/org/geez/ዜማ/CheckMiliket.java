@@ -65,6 +65,14 @@ public class CheckMiliket {
 	
 	private Pattern Qirts = Pattern.compile( "[᎐᎔᎗᎓᎒᎑᎙᎕᎖᎘\\s]+" );
 	private String bookFlag = "all";
+	
+	HashMap<ስልት,Color> rubricationColors = null;
+	private final Color red = new Color();
+	
+	private boolean rubricate = false;
+	private boolean fix121 = false;
+	private boolean markUnknown = true;
+	
 
 	private ProgressBar progressBar = null;
 	public void setProgressBar( ProgressBar progressBar ) {
@@ -134,27 +142,23 @@ public class CheckMiliket {
 		ruleFile.close();
 	}
 	
-	public CheckMiliket() {
-		try {
-			readMap( "ድጓ", DiguaMiliket, DiguaMiliketBySilt, "DiguaMiliket.txt" );
-			readMap( "ጾመ፡ድጓ", TsomeDiguaMiliket, TsomeDiguaMiliketBySilt, "TsomeDiguaMiliket.txt" );
-			readMap( "ምዕራፍ", MeerafMiliket, MeerafMiliketBySilt, "MeerafMiliket.txt" );
-			readMap( "ዚቅ", ZiqMiliket, ZiqMiliketBySilt, "ZiqMiliket.txt" );
-			readMap( "ዝማሬ", ZimarieMiliket, ZimarieMiliketBySilt, "ZimarieMiliket.txt" );
-			readMap( "ሌላቸው፡በምሕፃረ፡ቃል", LeilaMiliket, LeilaMiliketBySilt, "LeilaMiliket.txt" );
-			readMap( "TBD", ToBeDeterminedMiliket, ToBeDeterminedMiliketBySilt, "ToBeDetermined.txt" );
-		}
-		catch(Exception ex) {
-			System.err.println( ex );
-		}
+	public CheckMiliket() throws Exception {
+		blue.setVal( "00FF00" );
+		red.setVal( "FF0000" );
+		green.setVal( "0000FF" );
+		
+		readMap( "ድጓ", DiguaMiliket, DiguaMiliketBySilt, "DiguaMiliket.txt" );
+		readMap( "ጾመ፡ድጓ", TsomeDiguaMiliket, TsomeDiguaMiliketBySilt, "TsomeDiguaMiliket.txt" );
+		readMap( "ምዕራፍ", MeerafMiliket, MeerafMiliketBySilt, "MeerafMiliket.txt" );
+		readMap( "ዚቅ", ZiqMiliket, ZiqMiliketBySilt, "ZiqMiliket.txt" );
+		readMap( "ዝማሬ", ZimarieMiliket, ZimarieMiliketBySilt, "ZimarieMiliket.txt" );
+		readMap( "ሌላቸው፡በምሕፃረ፡ቃል", LeilaMiliket, LeilaMiliketBySilt, "LeilaMiliket.txt" );
+		readMap( "TBD", ToBeDeterminedMiliket, ToBeDeterminedMiliketBySilt, "ToBeDetermined.txt" );
 	}
 
 	
-	protected void setError(R r) {
+	protected void markUnknown(R r) {
 		RPr rpr = r.getRPr();
-		// RFonts rfonts = rpr.getRFonts();
-		Color red = new Color();
-		red.setVal( "FF0000" );
 		rpr.setColor( red ); 
 	}
 	
@@ -274,7 +278,7 @@ public class CheckMiliket {
 									Text txt = (org.docx4j.wml.Text)x2;
 									// this line is here for testing, later make the book a command line parameter
 									if(! isValidMiliket( txt.getValue() ) ) {
-										setError(r);
+										markUnknown( r );
 									}
 				
 								}
@@ -285,6 +289,7 @@ public class CheckMiliket {
 					
 
 						} else {
+							// throw exception
 							System.err.println( XmlUtils.marshaltoString(o, true, true) );
 						}
 				
@@ -302,7 +307,7 @@ public class CheckMiliket {
 
 	}
 
-	public void processObjects( final JaxbXmlPart<?> part, boolean fix121 ) throws Docx4JException
+	public void processObjects( final JaxbXmlPart<?> part ) throws Docx4JException
 	{
 			
 		ClassFinder finder = new ClassFinder( CTRuby.class );
@@ -338,9 +343,16 @@ public class CheckMiliket {
 							Text txt = (org.docx4j.wml.Text)x2;
 							// this line is here for testing, later make the book a command line parameter
 							if(! isValidMiliket( txt.getValue() ) ) {
-								// System.out.println( "Setting error for: " + txt.getValue() );
-								setError(r);
+								if ( markUnknown ) {
+									markUnknown( r );
+								}
 							}
+							/*
+							else if( rubricate ) {
+								// get the silt that corresponds to the r
+								rubricate( r );
+							}
+							*/
 					}
 					else {
 						// System.err.println( "Found: " + x2.getClass() );
@@ -349,6 +361,7 @@ public class CheckMiliket {
 				
 			} else {
 				System.err.println( XmlUtils.marshaltoString(o, true, true) );
+				// throw exception
 			}
 			
 		}
@@ -379,38 +392,42 @@ public class CheckMiliket {
 				break;
 			
 			default:
+				// throw exception
 				System.err.println( "The miliket collection \"" + miliketSet + "\", is not recognized" );
 				System.exit(0);
 		}
 	}
 	
-	public void process( String miliketSet, final File inputFile, final File outputFile, boolean fix121 )
-	{
+	public void setOptions( String miliketSet, boolean markUnknown, boolean fix121, Map<ስልት,Color> rubricationColors ) {
 		setMiliketSet( miliketSet );
-		process( inputFile, outputFile, fix121 );
+		this.markUnknown = markUnknown;
+		this.fix121 = fix121;
+		if( rubricationColors != null  ) {
+			this.markUnknown = false;
+			this.rubricate = true;
+		}
+		this.rubricationColors = rubricationColors;
 	}
 	
+	public void resetFlags() {
+		this.fix121 = false;
+		this.markUnknown = false;
+		this.rubricate = false;
+		this.bookFlag = "all";
+	}
 	
-	public void process( final File inputFile, final File outputFile, boolean fix121 )
+	public void process( final File inputFile, final File outputFile ) throws Exception
 	{
-
-		try {
-			WordprocessingMLPackage wordMLPackage = WordprocessingMLPackage.load( inputFile );		
-			MainDocumentPart documentPart = wordMLPackage.getMainDocumentPart();
-       		processObjects( documentPart, fix121 );
+		WordprocessingMLPackage wordMLPackage = WordprocessingMLPackage.load( inputFile );		
+		MainDocumentPart documentPart = wordMLPackage.getMainDocumentPart();
+       	processObjects( documentPart );
             
-       		if( documentPart.hasFootnotesPart() ) {
-	            FootnotesPart footnotesPart = documentPart.getFootnotesPart();
-       			processObjects( footnotesPart, fix121 );
-       		}
+      	if( documentPart.hasFootnotesPart() ) {
+      		FootnotesPart footnotesPart = documentPart.getFootnotesPart();
+      		processObjects( footnotesPart );
+      	}
 
-   
-       		wordMLPackage.save( outputFile );
-		}
-		catch ( Exception ex ) {
-			System.err.println( ex );
-		}
-
+      	wordMLPackage.save( outputFile );
 	}
 	
 }

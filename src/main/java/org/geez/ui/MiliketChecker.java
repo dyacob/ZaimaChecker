@@ -77,8 +77,17 @@ public final class MiliketChecker extends Application {
 	private static final String VERSION = "v0.4.0";
 	private final int APP_HEIGHT = 220, APP_WIDTH = 420;
 
-	private Map<ስልት,Color> rubricationColors = new HashMap<ስልት,Color>();
-
+	private Map<ስልት,org.docx4j.wml.Color> rubricationColors = new HashMap<ስልት,org.docx4j.wml.Color>();
+	 
+    CheckMiliket checker = null;
+	
+	private void errorAlert(Exception ex, String header ) {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle( "An Exception has occured" );
+        alert.setHeaderText( header );
+        alert.setContentText( ex.getMessage() );
+        alert.showAndWait();
+	}
 	
     private static void configureFileChooser( final FileChooser fileChooser ) {      
     	fileChooser.setTitle("View Word Files");
@@ -105,11 +114,20 @@ public final class MiliketChecker extends Application {
         listView.refresh();    	
     }
     
-    private void setRubricationColor(ስልት silt, Color color) {
-    	rubricationColors.put(silt,color);
+    private String getRGBString( Color color ) {
+    	return String.format("#%02X%02X%02X",
+    		    ((int)color.getRed())*255,
+    		    ((int)color.getGreen())*255,
+    		    ((int)color.getBlue())*255);
     }
     
-    private Dialog<Color> colorInput(String action, String question, Color _default, ስልት silt) {
+    private void setRubricationColor(ስልት silt, Color color) {
+    	org.docx4j.wml.Color wordColor = new org.docx4j.wml.Color();
+    	wordColor.setVal( getRGBString(color) );
+    	rubricationColors.put( silt, wordColor );
+    }
+    
+    private Dialog<Color> createColorPickerDialog(String action, String question, Color _default, ስልት silt) {
         Dialog<Color> dialog = new Dialog<>();
         dialog.setTitle(action);
         dialog.setHeaderText(question);
@@ -131,7 +149,7 @@ public final class MiliketChecker extends Application {
         return dialog;
     }
      
-    private Dialog<String> createColorDialog() {
+    private Dialog<String> createColorDialogOld() {
     	Dialog<String>  dialog = new Dialog<>();
     	VBox vbox = new VBox();
         final ColorPicker colorPicker = new ColorPicker();
@@ -152,6 +170,12 @@ public final class MiliketChecker extends Application {
     
     @Override
     public void start(final Stage stage) {
+    	try {
+    		checker = new CheckMiliket();
+    	}
+    	catch(Exception ex) {
+    		errorAlert(ex, "An Error has Occured.");
+    	}
         stage.setTitle("Zaima Miliket Checker");
         Image logoImage = new Image( ClassLoader.getSystemResourceAsStream("images/geez-org-avatar.png") );
         stage.getIcons().add( logoImage );
@@ -187,6 +211,9 @@ public final class MiliketChecker extends Application {
                         	// if ( recheck == true ) {
                         		// resetListView( listView, convertButton );
                         	// }
+                    		
+                    		checker.setOptions(miliketSet, true, fix121, rubricationColors);
+                    		
                         	int i = 0;
                             ObservableList<Label> itemList = listView.getItems();
                             for (File file : inputFileList) {
@@ -216,7 +243,7 @@ public final class MiliketChecker extends Application {
         );
       
         
-        CheckBox openFilesCheckbox = new CheckBox( "Open file(s) after hecking?");
+        CheckBox openFilesCheckbox = new CheckBox( "Open file(s) after checking?");
         openFilesCheckbox.selectedProperty().addListener(new ChangeListener<Boolean>() {
             public void changed(ObservableValue<? extends Boolean> ov,
                 Boolean old_val, Boolean new_val) {
@@ -284,7 +311,7 @@ public final class MiliketChecker extends Application {
 		                    desktop.browse( uri );
 	                    }
 	                    catch(Exception ex) {
-	                    	
+	                    	errorAlert( ex, "An Error Launching the Web Browser Occured" );
 	                    }
 			        });
 
@@ -303,7 +330,7 @@ public final class MiliketChecker extends Application {
         
         // create a menubar 
         MenuBar leftBar = new MenuBar(); 
-        Menu checkMenu = new Menu( "Check" );
+        Menu checkMenu = new Menu( "Miliket Set" );
         RadioMenuItem checkItem1 = new RadioMenuItem( ድጓ );
         RadioMenuItem checkItem2 = new RadioMenuItem( ጾመ_ድጓ );
         RadioMenuItem checkItem3 = new RadioMenuItem( ምዕራፍ );
@@ -353,17 +380,17 @@ public final class MiliketChecker extends Application {
         ararayMenu.getItems().addAll( ararayRed, ararayBlue, ararayGreen, ararayOther );
         
         geezOther.setOnAction( evt -> {
-        	Dialog<Color> d = colorInput( "Rubrication Color", "Select a Ge'ez Rubrication Color", Color.RED, ስልት.ግዕዝ);
+        	Dialog<Color> d = createColorPickerDialog( "Rubrication Color", "Select a Ge'ez Rubrication Color", Color.RED, ስልት.ግዕዝ);
         	d.showAndWait();
         });
         
         izelOther.setOnAction( evt -> {
-        	Dialog<Color> d = colorInput( "Rubrication Color", "Select a Ge'ez Rubrication Color", Color.RED, ስልት.ዕዝል);
+        	Dialog<Color> d = createColorPickerDialog( "Rubrication Color", "Select a Ge'ez Rubrication Color", Color.RED, ስልት.ዕዝል);
         	d.showAndWait();
         });
         
         ararayOther.setOnAction( evt -> {
-        	Dialog<Color> d = colorInput( "Rubrication Color", "Select a Ge'ez Rubrication Color", Color.RED, ስልት.ዓራራይ);
+        	Dialog<Color> d = createColorPickerDialog( "Rubrication Color", "Select a Ge'ez Rubrication Color", Color.RED, ስልት.ዓራራይ);
         	d.showAndWait();
         });
 
@@ -371,7 +398,7 @@ public final class MiliketChecker extends Application {
         fix121MenuItem.setOnAction( evt -> { fix121 = (fix121) ? false : true ; } );
         
         Menu optionsMenu = new Menu( "_Options" );
-        optionsMenu.getItems().addAll( checkMenu, fix121MenuItem, stripeMenu );
+        optionsMenu.getItems().addAll( checkMenu, stripeMenu, fix121MenuItem );
         
         // add menu to menubar 
         leftBar.getMenus().addAll( fileMenu, optionsMenu );
@@ -404,10 +431,9 @@ public final class MiliketChecker extends Application {
     }
  
     public static void main(String[] args) {
-        Application.launch(args);
+    		Application.launch(args);
     }
- 
-    CheckMiliket checker = new CheckMiliket();
+
     private void processFile(File inputFile) {
         try {
         	String inputFilePath = inputFile.getPath();
@@ -415,9 +441,10 @@ public final class MiliketChecker extends Application {
     		File outputFile = new File ( outputFilePath );
 
     		// checker.setProgressBar( progressBar );
-    		checker.process( miliketSet, inputFile, outputFile, fix121 );
+    		checker.process( inputFile, outputFile );
         }
         catch (Exception ex) {
+        	errorAlert( ex, "An Error has Occured." );
         	Logger.getLogger( MiliketChecker.class.getName() ).log( Level.SEVERE, null, ex );
         }
     }
@@ -431,6 +458,7 @@ public final class MiliketChecker extends Application {
     		desktop.open( outputFile );
         }
         catch (Exception ex) {
+        	errorAlert( ex, "An Error has Occured." );
         	Logger.getLogger( MiliketChecker.class.getName() ).log( Level.SEVERE, null, ex );
         }
     }
