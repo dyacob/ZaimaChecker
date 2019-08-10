@@ -66,7 +66,7 @@ public class CheckMiliket {
 	private Pattern Qirts = Pattern.compile( "[᎐᎔᎗᎓᎒᎑᎙᎕᎖᎘\\s]+" );
 	private String bookFlag = "all";
 	
-	HashMap<ስልት,Color> rubricationColors = null;
+	Map<ስልት,Color> rubricationColors = null;
 	private final Color red = new Color();
 	
 	private boolean rubricate = false;
@@ -74,17 +74,19 @@ public class CheckMiliket {
 	private boolean markUnknown = true;
 	
 
+	/* for later, maybe....
 	private ProgressBar progressBar = null;
 	public void setProgressBar( ProgressBar progressBar ) {
 		this.progressBar = progressBar;
 	}
+	*/
 	
 	private void readMap(String book, HashMap<String,String> map, HashMap<ስልት, HashMap<String,String>> mapBySilt, String fileName ) throws UnsupportedEncodingException, IOException {
 
 		String line;
 
-		ClassLoader classLoader = this.getClass().getClassLoader();
-		InputStream in = classLoader.getResourceAsStream( "tables/" + fileName ); 
+		ClassLoader    classLoader = this.getClass().getClassLoader();
+		InputStream    in = classLoader.getResourceAsStream( "tables/" + fileName ); 
 		BufferedReader ruleFile = new BufferedReader( new InputStreamReader(in, "UTF-8") );
 		
 		mapBySilt.put( ስልት.ግዕዝ, new HashMap<String,String>() );
@@ -111,7 +113,7 @@ public class CheckMiliket {
 				map.put( longField, shortField );
 			}
 			
-			if ( siltField.contains( "፡ወ")) {
+			if ( siltField.contains( "፡ወ")) {  // check if these are elliminated
 				String[] parts = siltField.split("፡ወ");
 				for( String part: parts) {
 					HashMap<String,String> siltMap = mapBySilt.get( ስልት.valueOf( part ) );
@@ -137,15 +139,12 @@ public class CheckMiliket {
 		map.put( "አንብር", "ር" );
 		map.put( "ድርስ", "ስ|ርስ" );
 		map.put( "ሥረዩ", "ረዩ" );
-		
-		
+	
 		ruleFile.close();
 	}
 	
 	public CheckMiliket() throws Exception {
-		blue.setVal( "00FF00" );
 		red.setVal( "FF0000" );
-		green.setVal( "0000FF" );
 		
 		readMap( "ድጓ", DiguaMiliket, DiguaMiliketBySilt, "DiguaMiliket.txt" );
 		readMap( "ጾመ፡ድጓ", TsomeDiguaMiliket, TsomeDiguaMiliketBySilt, "TsomeDiguaMiliket.txt" );
@@ -245,6 +244,13 @@ public class CheckMiliket {
 		return isValidMiliket( miliket, siltMap );
 	}
 	
+	
+	public ስልት getSiltOfMililket() {
+		ስልት silt =
+		
+		return silt;
+	}
+	
 	public void processObjectsWithProgressBar( final JaxbXmlPart<?> part ) throws Docx4JException
 	{
 				
@@ -302,7 +308,8 @@ public class CheckMiliket {
 					return null;
 				}
 			};
-			this.progressBar.progressProperty().bind( task.progressProperty() );
+			// return to this later
+			// this.progressBar.progressProperty().bind( task.progressProperty() );
 			new Thread(task).start();
 
 	}
