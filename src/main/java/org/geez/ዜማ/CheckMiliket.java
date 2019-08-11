@@ -113,7 +113,7 @@ public class CheckMiliket {
 				map.put( longField, shortField );
 			}
 			
-			if ( siltField.contains( "፡ወ")) {  // check if these are elliminated
+			if ( siltField.contains( "፡ወ")) {  // check if these are eliminated
 				String[] parts = siltField.split("፡ወ");
 				for( String part: parts) {
 					HashMap<String,String> siltMap = mapBySilt.get( ስልት.valueOf( part ) );
@@ -138,7 +138,7 @@ public class CheckMiliket {
 		
 		map.put( "አንብር", "ር" );
 		map.put( "ድርስ", "ስ|ርስ" );
-		map.put( "ሥረዩ", "ረዩ" );
+		map.put( "ሥረዩ", "ረዩ|ዩ" );
 	
 		ruleFile.close();
 	}
@@ -154,7 +154,6 @@ public class CheckMiliket {
 		readMap( "ሌላቸው፡በምሕፃረ፡ቃል", LeilaMiliket, LeilaMiliketBySilt, "LeilaMiliket.txt" );
 		readMap( "TBD", ToBeDeterminedMiliket, ToBeDeterminedMiliketBySilt, "ToBeDetermined.txt" );
 	}
-
 	
 	protected void markUnknown(R r) {
 		RPr rpr = r.getRPr();
@@ -245,7 +244,12 @@ public class CheckMiliket {
 	}
 	
 	
-	public ስልት getSiltOfMililket() {
+	public ስልት getSiltOfMililket(String miliket) {
+		
+		for(ስልት silt: ስልት.values() ) {
+			
+			if(DiguaMiliketBySilt.get(silt).containsKey(key) )
+		}
 		ስልት silt =
 		
 		return silt;
