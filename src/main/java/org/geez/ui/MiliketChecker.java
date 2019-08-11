@@ -183,9 +183,9 @@ public final class MiliketChecker extends Application {
         // final Label label = new Label( "ዜማ ምልእክት Checker" );
     	
         String osName = System.getProperty("os.name");
-        String defaultFont = "Ebrima";
+        final String defaultFont = ( osName.equals("Mac OS X") ) ? "Kefa" : "Ebrima" ;
         if( osName.equals("Mac OS X") ) {
-        	defaultFont = "Kefa";
+        	// defaultFont = "Kefa";
             com.apple.eawt.Application.getApplication().setDockIconImage( SwingFXUtils.fromFXImage(logoImage, null) );            
         }
         
@@ -357,19 +357,19 @@ public final class MiliketChecker extends Application {
         geezRed.setStyle( "-fx-text-fill: red;" );
         geezRed.setToggleGroup( geezRubricationGroup );
         geezRed.setOnAction(
-        		evt -> setRubricationColor( ስልት.ግዕዝ, Color.RED )
+        		evt -> { setRubricationColor( ስልት.ግዕዝ, Color.RED ); geezMenu.setStyle( "-fx-font: 12px \"" + defaultFont + "\"; -fx-text-fill: red;" ); }
         );
         RadioMenuItem geezBlue = new RadioMenuItem( "● Blue" );
         geezBlue.setStyle( "-fx-text-fill: blue;" );
         geezBlue.setToggleGroup( geezRubricationGroup );
         geezBlue.setOnAction(
-        		evt -> setRubricationColor( ስልት.ግዕዝ, Color.BLUE )
+        		evt -> { setRubricationColor( ስልት.ግዕዝ, Color.BLUE ); geezMenu.setStyle( "-fx-font: 12px \"" + defaultFont + "\"; -fx-text-fill: blue;" ); }
         );
         RadioMenuItem geezGreen = new RadioMenuItem( "● Green" );
         geezGreen.setStyle( "-fx-text-fill: green;" );
         geezGreen.setToggleGroup( geezRubricationGroup );
         geezGreen.setOnAction(
-        		evt -> setRubricationColor( ስልት.ግዕዝ, Color.GREEN )
+        		evt -> { setRubricationColor( ስልት.ግዕዝ, Color.GREEN ); geezMenu.setStyle( "-fx-font: 12px \"" + defaultFont + "\"; -fx-text-fill: green;" ); }
         );
         RadioMenuItem geezOther = new RadioMenuItem( "● Other..." );
         geezOther.setToggleGroup( geezRubricationGroup );
@@ -384,19 +384,19 @@ public final class MiliketChecker extends Application {
         izelRed.setStyle( "-fx-text-fill: red;" );
         izelRed.setToggleGroup( izelRubricationGroup );
         izelRed.setOnAction(
-            	evt -> setRubricationColor( ስልት.ዕዝል, Color.RED )
+            	evt -> { setRubricationColor( ስልት.ዕዝል, Color.RED ); izelMenu.setStyle( "-fx-font: 12px \"" + defaultFont + "\"; -fx-text-fill: red;" ); }
         );
         RadioMenuItem izelBlue = new RadioMenuItem( "● Blue" );
         izelBlue.setStyle( "-fx-text-fill: blue;" );
         izelBlue.setToggleGroup( izelRubricationGroup );
         izelRed.setOnAction(
-            	evt -> setRubricationColor( ስልት.ዕዝል, Color.BLUE )
+            	evt -> { setRubricationColor( ስልት.ዕዝል, Color.BLUE ); izelMenu.setStyle( "-fx-font: 12px \"" + defaultFont + "\"; -fx-text-fill: blue;" ); }
         );
         RadioMenuItem izelGreen = new RadioMenuItem( "● Green" );
         izelGreen.setStyle( "-fx-text-fill: green;" );
         izelGreen.setToggleGroup( izelRubricationGroup );
         izelRed.setOnAction(
-            	evt -> setRubricationColor( ስልት.ዕዝል, Color.GREEN )
+            	evt -> { setRubricationColor( ስልት.ዕዝል, Color.GREEN ); izelMenu.setStyle( "-fx-font: 12px \"" + defaultFont + "\"; -fx-text-fill: green;" ); }
         );
         RadioMenuItem izelOther = new RadioMenuItem( "● Other..." );
         izelOther.setToggleGroup( izelRubricationGroup );
@@ -411,19 +411,19 @@ public final class MiliketChecker extends Application {
         ararayRed.setStyle( "-fx-text-fill: red;" );
         ararayRed.setToggleGroup( ararayRubricationGroup );
         ararayRed.setOnAction(
-            	evt -> setRubricationColor( ስልት.ዓራራይ, Color.RED )
+            	evt -> { setRubricationColor( ስልት.ዓራራይ, Color.RED ); ararayMenu.setStyle( "-fx-font: 12px \"" + defaultFont + "\"; -fx-text-fill: red;" ); }
         );
         RadioMenuItem ararayBlue = new RadioMenuItem( "● Blue" );
         ararayBlue.setStyle( "-fx-text-fill: blue;" );
         ararayBlue.setToggleGroup( ararayRubricationGroup );
         ararayBlue.setOnAction(
-            	evt -> setRubricationColor( ስልት.ዓራራይ, Color.BLUE )
+            	evt -> { setRubricationColor( ስልት.ዓራራይ, Color.BLUE ); ararayMenu.setStyle( "-fx-font: 12px \"" + defaultFont + "\"; -fx-text-fill: blue;" ); }
         );
         RadioMenuItem ararayGreen = new RadioMenuItem( "● Green" );
         ararayGreen.setStyle( "-fx-text-fill: green;" );
         ararayGreen.setToggleGroup( ararayRubricationGroup );
         ararayGreen.setOnAction(
-        	evt -> setRubricationColor( ስልት.ዓራራይ, Color.GREEN )
+        	evt -> { setRubricationColor( ስልት.ዓራራይ, Color.GREEN ); ararayMenu.setStyle( "-fx-font: 12px \"" + defaultFont + "\"; -fx-text-fill: green;" ); }
         );
         RadioMenuItem ararayOther = new RadioMenuItem( "● Other..." );
         ararayOther.setToggleGroup( ararayRubricationGroup );
