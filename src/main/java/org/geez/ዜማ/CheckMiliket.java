@@ -146,13 +146,13 @@ public class CheckMiliket {
 	public CheckMiliket() throws Exception {
 		red.setVal( "FF0000" );
 		
-		readMap( "ድጓ", DiguaMiliket, DiguaMiliketBySilt, "DiguaMiliket.txt" );
+		readMap( "ድጓ",    DiguaMiliket, DiguaMiliketBySilt, "DiguaMiliket.txt" );
 		readMap( "ጾመ፡ድጓ", TsomeDiguaMiliket, TsomeDiguaMiliketBySilt, "TsomeDiguaMiliket.txt" );
 		readMap( "ምዕራፍ", MeerafMiliket, MeerafMiliketBySilt, "MeerafMiliket.txt" );
-		readMap( "ዚቅ", ZiqMiliket, ZiqMiliketBySilt, "ZiqMiliket.txt" );
-		readMap( "ዝማሬ", ZimarieMiliket, ZimarieMiliketBySilt, "ZimarieMiliket.txt" );
+		readMap( "ዚቅ",    ZiqMiliket, ZiqMiliketBySilt, "ZiqMiliket.txt" );
+		readMap( "ዝማሬ",  ZimarieMiliket, ZimarieMiliketBySilt, "ZimarieMiliket.txt" );
 		readMap( "ሌላቸው፡በምሕፃረ፡ቃል", LeilaMiliket, LeilaMiliketBySilt, "LeilaMiliket.txt" );
-		readMap( "TBD", ToBeDeterminedMiliket, ToBeDeterminedMiliketBySilt, "ToBeDetermined.txt" );
+		readMap( "TBD",    ToBeDeterminedMiliket, ToBeDeterminedMiliketBySilt, "ToBeDetermined.txt" );
 	}
 	
 	protected void markUnknown(R r) {
@@ -247,14 +247,31 @@ public class CheckMiliket {
 	public ስልት getSiltOfMililket(String miliket) {
 		
 		for(ስልት silt: ስልት.values() ) {
-			
-			if(DiguaMiliketBySilt.get(silt).containsKey(key) )
+			for(String book: books.keySet() ) {
+				if( isValidMiliket( miliket, book, silt) ) {
+					return silt;
+				}
+			}
 		}
-		ስልት silt =
 		
-		return silt;
+		return null;
 	}
 	
+	
+	protected void rubricate(R r, String miliket) {
+		ስልት silt = getSiltOfMililket( miliket );
+		if( silt != null ) {
+			Color color = rubricationColors.get(silt);
+			if( color != null ) {
+				RPr rpr = r.getRPr();
+				rpr.setColor( color );
+			}
+		}
+	}
+	
+	
+	/* Return to this later
+	 * 
 	public void processObjectsWithProgressBar( final JaxbXmlPart<?> part ) throws Docx4JException
 	{
 				
@@ -317,6 +334,7 @@ public class CheckMiliket {
 			new Thread(task).start();
 
 	}
+	*/
 
 	public void processObjects( final JaxbXmlPart<?> part ) throws Docx4JException
 	{
@@ -358,12 +376,10 @@ public class CheckMiliket {
 									markUnknown( r );
 								}
 							}
-							/*
 							else if( rubricate ) {
 								// get the silt that corresponds to the r
-								rubricate( r );
+								rubricate( r, txt.getValue() );
 							}
-							*/
 					}
 					else {
 						// System.err.println( "Found: " + x2.getClass() );
