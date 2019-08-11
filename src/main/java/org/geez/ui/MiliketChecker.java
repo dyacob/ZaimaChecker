@@ -116,9 +116,9 @@ public final class MiliketChecker extends Application {
     
     private String getRGBString( Color color ) {
     	return String.format("#%02X%02X%02X",
-    		    ((int)color.getRed())*255,
-    		    ((int)color.getGreen())*255,
-    		    ((int)color.getBlue())*255);
+    		    (int)(color.getRed()*255),
+    		    (int)(color.getGreen()*255),
+    		    (int)(color.getBlue()*255) );
     }
     
     private void setRubricationColor(ስልት silt, Color color) {
@@ -159,7 +159,7 @@ public final class MiliketChecker extends Application {
         text.setFill(colorPicker.getValue());
 
         colorPicker.setOnAction((ActionEvent t) -> {
-          text.setFill(colorPicker.getValue());
+        	text.setFill(colorPicker.getValue());
         });
 
         vbox.getChildren().addAll( text, colorPicker);
@@ -283,7 +283,7 @@ public final class MiliketChecker extends Application {
         );
         
         MenuItem exitMenuItem = new MenuItem("Exit");
-        exitMenuItem.setOnAction( actionEvent -> Platform.exit() );
+        exitMenuItem.setOnAction( evt -> Platform.exit() );
         fileMenu.getItems().addAll( fileMenuItem, new SeparatorMenuItem(), exitMenuItem ); 
         
         
@@ -304,7 +304,7 @@ public final class MiliketChecker extends Application {
 			        Hyperlink link = new Hyperlink("GitHub");
 			        fp.getChildren().addAll( label, link);
 
-			        link.setOnAction( (event) -> {
+			        link.setOnAction( evt -> {
 	                    alert.close();
 	                    try {
 		                    URI uri = new URI( "https://github.com/dyacob/ZaimaCorrect/" );
@@ -351,48 +351,89 @@ public final class MiliketChecker extends Application {
         izelMenu.setStyle("-fx-font: 12px \""  + defaultFont + "\";");
         ararayMenu.setStyle("-fx-font: 12px \""  + defaultFont + "\";");
         stripeMenu.getItems().addAll( geezMenu, izelMenu, ararayMenu );
-
-        MenuItem geezRed = new MenuItem( "● Red" );
+        
+        ToggleGroup geezRubricationGroup = new ToggleGroup();
+        RadioMenuItem geezRed = new RadioMenuItem( "● Red" );
         geezRed.setStyle( "-fx-text-fill: red;" );
-        MenuItem geezBlue = new MenuItem( "● Blue" );
+        geezRed.setToggleGroup( geezRubricationGroup );
+        geezRed.setOnAction(
+        		evt -> setRubricationColor( ስልት.ግዕዝ, Color.RED )
+        );
+        RadioMenuItem geezBlue = new RadioMenuItem( "● Blue" );
         geezBlue.setStyle( "-fx-text-fill: blue;" );
-        MenuItem geezGreen = new MenuItem( "● Green" );
+        geezBlue.setToggleGroup( geezRubricationGroup );
+        geezBlue.setOnAction(
+        		evt -> setRubricationColor( ስልት.ግዕዝ, Color.BLUE )
+        );
+        RadioMenuItem geezGreen = new RadioMenuItem( "● Green" );
         geezGreen.setStyle( "-fx-text-fill: green;" );
-        MenuItem geezOther = new MenuItem( "● Other..." );
-        geezMenu.getItems().addAll( geezRed, geezBlue, geezGreen, geezOther );
-
-        MenuItem izelRed = new MenuItem( "● Red" );
-        izelRed.setStyle( "-fx-text-fill: red;" );
-        MenuItem izelBlue = new MenuItem( "● Blue" );
-        izelBlue.setStyle( "-fx-text-fill: blue;" );
-        MenuItem izelGreen = new MenuItem( "● Green" );
-        izelGreen.setStyle( "-fx-text-fill: green;" );
-        MenuItem izelOther = new MenuItem( "● Other..." );
-        izelMenu.getItems().addAll( izelRed, izelBlue, izelGreen, izelOther );
-        
-        MenuItem ararayRed = new MenuItem( "● Red" );
-        ararayRed.setStyle( "-fx-text-fill: red;" );
-        MenuItem ararayBlue = new MenuItem( "● Blue" );
-        ararayBlue.setStyle( "-fx-text-fill: blue;" );
-        MenuItem ararayGreen = new MenuItem( "● Green" );
-        ararayGreen.setStyle( "-fx-text-fill: green;" );
-        MenuItem ararayOther = new MenuItem( "● Other..." );
-        ararayMenu.getItems().addAll( ararayRed, ararayBlue, ararayGreen, ararayOther );
-        
+        geezGreen.setToggleGroup( geezRubricationGroup );
+        geezGreen.setOnAction(
+        		evt -> setRubricationColor( ስልት.ግዕዝ, Color.GREEN )
+        );
+        RadioMenuItem geezOther = new RadioMenuItem( "● Other..." );
+        geezOther.setToggleGroup( geezRubricationGroup );
         geezOther.setOnAction( evt -> {
         	Dialog<Color> d = createColorPickerDialog( "Rubrication Color", "Select a Ge'ez Rubrication Color", Color.RED, ስልት.ግዕዝ);
         	d.showAndWait();
         });
-        
+        geezMenu.getItems().addAll( geezRed, geezBlue, geezGreen, geezOther );
+
+        ToggleGroup izelRubricationGroup = new ToggleGroup();
+        RadioMenuItem izelRed = new RadioMenuItem( "● Red" );
+        izelRed.setStyle( "-fx-text-fill: red;" );
+        izelRed.setToggleGroup( izelRubricationGroup );
+        izelRed.setOnAction(
+            	evt -> setRubricationColor( ስልት.ዕዝል, Color.RED )
+        );
+        RadioMenuItem izelBlue = new RadioMenuItem( "● Blue" );
+        izelBlue.setStyle( "-fx-text-fill: blue;" );
+        izelBlue.setToggleGroup( izelRubricationGroup );
+        izelRed.setOnAction(
+            	evt -> setRubricationColor( ስልት.ዕዝል, Color.BLUE )
+        );
+        RadioMenuItem izelGreen = new RadioMenuItem( "● Green" );
+        izelGreen.setStyle( "-fx-text-fill: green;" );
+        izelGreen.setToggleGroup( izelRubricationGroup );
+        izelRed.setOnAction(
+            	evt -> setRubricationColor( ስልት.ዕዝል, Color.GREEN )
+        );
+        RadioMenuItem izelOther = new RadioMenuItem( "● Other..." );
+        izelOther.setToggleGroup( izelRubricationGroup );
         izelOther.setOnAction( evt -> {
         	Dialog<Color> d = createColorPickerDialog( "Rubrication Color", "Select a Ge'ez Rubrication Color", Color.RED, ስልት.ዕዝል);
         	d.showAndWait();
         });
+        izelMenu.getItems().addAll( izelRed, izelBlue, izelGreen, izelOther );
         
+        ToggleGroup ararayRubricationGroup = new ToggleGroup();
+        RadioMenuItem ararayRed = new RadioMenuItem( "● Red" );
+        ararayRed.setStyle( "-fx-text-fill: red;" );
+        ararayRed.setToggleGroup( ararayRubricationGroup );
+        ararayRed.setOnAction(
+            	evt -> setRubricationColor( ስልት.ዓራራይ, Color.RED )
+        );
+        RadioMenuItem ararayBlue = new RadioMenuItem( "● Blue" );
+        ararayBlue.setStyle( "-fx-text-fill: blue;" );
+        ararayBlue.setToggleGroup( ararayRubricationGroup );
+        ararayBlue.setOnAction(
+            	evt -> setRubricationColor( ስልት.ዓራራይ, Color.BLUE )
+        );
+        RadioMenuItem ararayGreen = new RadioMenuItem( "● Green" );
+        ararayGreen.setStyle( "-fx-text-fill: green;" );
+        ararayGreen.setToggleGroup( ararayRubricationGroup );
+        ararayGreen.setOnAction(
+        	evt -> setRubricationColor( ስልት.ዓራራይ, Color.GREEN )
+        );
+        RadioMenuItem ararayOther = new RadioMenuItem( "● Other..." );
+        ararayOther.setToggleGroup( ararayRubricationGroup );
         ararayOther.setOnAction( evt -> {
         	Dialog<Color> d = createColorPickerDialog( "Rubrication Color", "Select a Ge'ez Rubrication Color", Color.RED, ስልት.ዓራራይ);
         	d.showAndWait();
         });
+        ararayMenu.getItems().addAll( ararayRed, ararayBlue, ararayGreen, ararayOther );
+  
+        
 
         MenuItem fix121MenuItem = new RadioMenuItem( "Set \"1-2-1\" to \"centered\"?" );
         fix121MenuItem.setOnAction( evt -> { fix121 = (fix121) ? false : true ; } );
