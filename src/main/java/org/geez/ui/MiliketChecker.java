@@ -7,6 +7,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -70,6 +71,7 @@ public final class MiliketChecker extends Application {
 	private String miliketSet = ኹሉም; // alphabetic based default
 	private boolean openOutput = true;
 	private boolean fix121 = false;
+	private boolean markUnknown = true;
 	
 	private List<File> inputFileList = null;
 	
@@ -167,6 +169,14 @@ public final class MiliketChecker extends Application {
     	return dialog;
     }
     
+    private final String osName = System.getProperty("os.name");
+    private final String defaultFont = ( osName.equals("Mac OS X") ) ? "Kefa" : "Ebrima" ;
+    private void setSelectedRubricationColor(Menu menu, Menu submenu, RadioMenuItem item, RadioMenuItem other, ስልት silt, Color color, String colorString ) {
+		setRubricationColor( silt, color ); 
+		submenu.setStyle( "-fx-font: 12px \"" + defaultFont + "\"; -fx-text-fill: " + colorString + ";" ); 
+    	menu.getProperties().put( "lastSelected" , item );
+    	other.setStyle( "" );
+    }
     
     @Override
     public void start(final Stage stage) {
@@ -182,8 +192,8 @@ public final class MiliketChecker extends Application {
         // revisit for java9 to replace com.apple.eawt below: Taskbar.getTaskbar().setIconImage( logoImage );
         // final Label label = new Label( "ዜማ ምልእክት Checker" );
     	
-        String osName = System.getProperty("os.name");
-        final String defaultFont = ( osName.equals("Mac OS X") ) ? "Kefa" : "Ebrima" ;
+        // String osName = System.getProperty("os.name");
+        // final String defaultFont = ( osName.equals("Mac OS X") ) ? "Kefa" : "Ebrima" ;
         if( osName.equals("Mac OS X") ) {
         	// defaultFont = "Kefa";
             com.apple.eawt.Application.getApplication().setDockIconImage( SwingFXUtils.fromFXImage(logoImage, null) );            
@@ -212,7 +222,7 @@ public final class MiliketChecker extends Application {
                         		// resetListView( listView, convertButton );
                         	// }
                     		
-                    		checker.setOptions(miliketSet, true, fix121, rubricationColors);
+                    		checker.setOptions(miliketSet, markUnknown, fix121, rubricationColors);
                     		
                         	int i = 0;
                             ObservableList<Label> itemList = listView.getItems();
@@ -330,7 +340,12 @@ public final class MiliketChecker extends Application {
         
         // create a menubar 
         MenuBar leftBar = new MenuBar(); 
+        RadioMenuItem markUnknownMenuItem = new RadioMenuItem( "Mark Unknown" );
+        markUnknownMenuItem.setSelected( true );
+        
+
         Menu checkMenu = new Menu( "Miliket Set" );
+       
         RadioMenuItem checkItem1 = new RadioMenuItem( ድጓ );
         RadioMenuItem checkItem2 = new RadioMenuItem( ጾመ_ድጓ );
         RadioMenuItem checkItem3 = new RadioMenuItem( ምዕራፍ );
@@ -340,11 +355,11 @@ public final class MiliketChecker extends Application {
         checkItem1.setSelected(true);
         checkItem2.setSelected(true);
         checkItem3.setSelected(true);
-
         checkMenu.getItems().addAll( checkItem1, checkItem2, checkItem3 );
+        
         Menu stripeMenu = new Menu( "Rubricate" );
-        Menu geezMenu = new Menu( "ግዕዝ" );
-        Menu izelMenu = new Menu( "ዕዝል" );
+        Menu geezMenu   = new Menu( "ግዕዝ" );
+        Menu izelMenu   = new Menu( "ዕዝል" );
         Menu ararayMenu = new Menu("ዓራራይ" );
 
         geezMenu.setStyle("-fx-font: 12px \"" + defaultFont + "\";");
@@ -353,85 +368,144 @@ public final class MiliketChecker extends Application {
         stripeMenu.getItems().addAll( geezMenu, izelMenu, ararayMenu );
         
         ToggleGroup geezRubricationGroup = new ToggleGroup();
+        final RadioMenuItem geezOther = new RadioMenuItem( "● Other..." );
         RadioMenuItem geezRed = new RadioMenuItem( "● Red" );
         geezRed.setStyle( "-fx-text-fill: red;" );
         geezRed.setToggleGroup( geezRubricationGroup );
         geezRed.setOnAction(
-        		evt -> { setRubricationColor( ስልት.ግዕዝ, Color.RED ); geezMenu.setStyle( "-fx-font: 12px \"" + defaultFont + "\"; -fx-text-fill: red;" ); }
+        		evt -> { markUnknownMenuItem.setSelected( false ); setSelectedRubricationColor( stripeMenu, geezMenu, geezRed, geezOther, ስልት.ግዕዝ, Color.RED, "red" ); }
         );
         RadioMenuItem geezBlue = new RadioMenuItem( "● Blue" );
         geezBlue.setStyle( "-fx-text-fill: blue;" );
         geezBlue.setToggleGroup( geezRubricationGroup );
         geezBlue.setOnAction(
-        		evt -> { setRubricationColor( ስልት.ግዕዝ, Color.BLUE ); geezMenu.setStyle( "-fx-font: 12px \"" + defaultFont + "\"; -fx-text-fill: blue;" ); }
+        		evt -> { markUnknownMenuItem.setSelected( false ); setSelectedRubricationColor( stripeMenu, geezMenu, geezBlue, geezOther, ስልት.ግዕዝ, Color.BLUE, "blue" ); }
         );
         RadioMenuItem geezGreen = new RadioMenuItem( "● Green" );
         geezGreen.setStyle( "-fx-text-fill: green;" );
         geezGreen.setToggleGroup( geezRubricationGroup );
         geezGreen.setOnAction(
-        		evt -> { setRubricationColor( ስልት.ግዕዝ, Color.GREEN ); geezMenu.setStyle( "-fx-font: 12px \"" + defaultFont + "\"; -fx-text-fill: green;" ); }
+        		evt -> { markUnknownMenuItem.setSelected( false ); setSelectedRubricationColor( stripeMenu, geezMenu, geezGreen, geezOther, ስልት.ግዕዝ, Color.GREEN, "green" ); }
         );
-        RadioMenuItem geezOther = new RadioMenuItem( "● Other..." );
+        
         geezOther.setToggleGroup( geezRubricationGroup );
         geezOther.setOnAction( evt -> {
-        	Dialog<Color> d = createColorPickerDialog( "Rubrication Color", "Select a Ge'ez Rubrication Color", Color.RED, ስልት.ግዕዝ);
-        	d.showAndWait();
+        	Dialog<Color> d = createColorPickerDialog( "Rubrication Color", "Select a Ge'ez Rubrication Color", Color.BLACK, ስልት.ግዕዝ );
+        	Optional<Color> result = d.showAndWait();
+        	if ( result.isPresent() ) {
+        		String otherColor = getRGBString( d.getResult() );
+	        	geezMenu.setStyle( "-fx-font: 12px \"" + defaultFont + "\"; -fx-text-fill: " + otherColor + ";" );
+	        	geezOther.setStyle( " -fx-text-fill: " + otherColor + ";" );
+	        	stripeMenu.getProperties().put( "lastSelected"  , geezOther );
+	        	markUnknownMenuItem.setSelected( false ); 
+        	}
+        	else {
+        		// do not set this item as checked
+        		geezOther.setSelected( false );
+            	RadioMenuItem selected  = (RadioMenuItem)stripeMenu.getProperties().get( "lastSelected" );
+            	if( selected != null )
+            		selected.setSelected( true );
+        	}
         });
         geezMenu.getItems().addAll( geezRed, geezBlue, geezGreen, geezOther );
 
         ToggleGroup izelRubricationGroup = new ToggleGroup();
+        final RadioMenuItem izelOther = new RadioMenuItem( "● Other..." );
         RadioMenuItem izelRed = new RadioMenuItem( "● Red" );
         izelRed.setStyle( "-fx-text-fill: red;" );
         izelRed.setToggleGroup( izelRubricationGroup );
         izelRed.setOnAction(
-            	evt -> { setRubricationColor( ስልት.ዕዝል, Color.RED ); izelMenu.setStyle( "-fx-font: 12px \"" + defaultFont + "\"; -fx-text-fill: red;" ); }
+        		evt -> { markUnknownMenuItem.setSelected( false ); markUnknownMenuItem.setStyle( "-fx-font-style: italic;" ); setSelectedRubricationColor( stripeMenu, izelMenu, izelRed, izelOther, ስልት.ዕዝል, Color.RED, "red" ); }
         );
         RadioMenuItem izelBlue = new RadioMenuItem( "● Blue" );
         izelBlue.setStyle( "-fx-text-fill: blue;" );
         izelBlue.setToggleGroup( izelRubricationGroup );
-        izelRed.setOnAction(
-            	evt -> { setRubricationColor( ስልት.ዕዝል, Color.BLUE ); izelMenu.setStyle( "-fx-font: 12px \"" + defaultFont + "\"; -fx-text-fill: blue;" ); }
+        izelBlue.setOnAction(
+        		evt -> { markUnknownMenuItem.setSelected( false ); markUnknownMenuItem.setStyle( "-fx-font-style: italic;" );  setSelectedRubricationColor( stripeMenu, izelMenu, izelBlue, izelOther, ስልት.ዕዝል, Color.BLUE, "blue" ); }
         );
         RadioMenuItem izelGreen = new RadioMenuItem( "● Green" );
         izelGreen.setStyle( "-fx-text-fill: green;" );
         izelGreen.setToggleGroup( izelRubricationGroup );
-        izelRed.setOnAction(
-            	evt -> { setRubricationColor( ስልት.ዕዝል, Color.GREEN ); izelMenu.setStyle( "-fx-font: 12px \"" + defaultFont + "\"; -fx-text-fill: green;" ); }
+        izelGreen.setOnAction(
+        		evt -> { markUnknownMenuItem.setSelected( false ); markUnknownMenuItem.setStyle( "-fx-font-style: italic;" );  setSelectedRubricationColor( stripeMenu, izelMenu, izelGreen, izelOther, ስልት.ዕዝል, Color.GREEN, "green" ); }
         );
-        RadioMenuItem izelOther = new RadioMenuItem( "● Other..." );
+
         izelOther.setToggleGroup( izelRubricationGroup );
         izelOther.setOnAction( evt -> {
-        	Dialog<Color> d = createColorPickerDialog( "Rubrication Color", "Select a Ge'ez Rubrication Color", Color.RED, ስልት.ዕዝል);
-        	d.showAndWait();
+        	Dialog<Color> d = createColorPickerDialog( "Rubrication Color", "Select a Ge'ez Rubrication Color", Color.BLACK, ስልት.ዕዝል );
+        	Optional<Color> result = d.showAndWait();
+        	if ( result.isPresent() ) {
+        		String otherColor = getRGBString( d.getResult() );
+        		izelMenu.setStyle( "-fx-font: 12px \"" + defaultFont + "\"; -fx-text-fill: " +  otherColor + ";" );
+        		izelOther.setStyle( " -fx-text-fill: " + otherColor + ";" );
+	        	stripeMenu.getProperties().put( "lastSelected"  , izelOther );
+	        	markUnknownMenuItem.setSelected( false ); 
+        	}
+        	else {
+        		// do not set this item as checked
+        		izelOther.setSelected( false );
+            	RadioMenuItem selected  = (RadioMenuItem)stripeMenu.getProperties().get( "lastSelected" );
+            	if( selected != null )
+            		selected.setSelected( true );
+        	}
         });
         izelMenu.getItems().addAll( izelRed, izelBlue, izelGreen, izelOther );
         
         ToggleGroup ararayRubricationGroup = new ToggleGroup();
+        final RadioMenuItem ararayOther = new RadioMenuItem( "● Other..." );
         RadioMenuItem ararayRed = new RadioMenuItem( "● Red" );
         ararayRed.setStyle( "-fx-text-fill: red;" );
         ararayRed.setToggleGroup( ararayRubricationGroup );
         ararayRed.setOnAction(
-            	evt -> { setRubricationColor( ስልት.ዓራራይ, Color.RED ); ararayMenu.setStyle( "-fx-font: 12px \"" + defaultFont + "\"; -fx-text-fill: red;" ); }
+        		evt -> { markUnknownMenuItem.setSelected( false ); setSelectedRubricationColor( stripeMenu, ararayMenu, ararayRed, ararayOther, ስልት.ዓራራይ, Color.RED, "red" ); }
         );
         RadioMenuItem ararayBlue = new RadioMenuItem( "● Blue" );
         ararayBlue.setStyle( "-fx-text-fill: blue;" );
         ararayBlue.setToggleGroup( ararayRubricationGroup );
         ararayBlue.setOnAction(
-            	evt -> { setRubricationColor( ስልት.ዓራራይ, Color.BLUE ); ararayMenu.setStyle( "-fx-font: 12px \"" + defaultFont + "\"; -fx-text-fill: blue;" ); }
+        		evt -> { markUnknownMenuItem.setSelected( false ); setSelectedRubricationColor( stripeMenu, ararayMenu, ararayBlue, ararayOther, ስልት.ዓራራይ, Color.BLUE, "blue" ); }
         );
         RadioMenuItem ararayGreen = new RadioMenuItem( "● Green" );
         ararayGreen.setStyle( "-fx-text-fill: green;" );
         ararayGreen.setToggleGroup( ararayRubricationGroup );
         ararayGreen.setOnAction(
-        	evt -> { setRubricationColor( ስልት.ዓራራይ, Color.GREEN ); ararayMenu.setStyle( "-fx-font: 12px \"" + defaultFont + "\"; -fx-text-fill: green;" ); }
+        		evt -> { markUnknownMenuItem.setSelected( false ); setSelectedRubricationColor( stripeMenu, ararayMenu, ararayGreen, ararayOther, ስልት.ዓራራይ, Color.GREEN, "green" ); }
         );
-        RadioMenuItem ararayOther = new RadioMenuItem( "● Other..." );
+
         ararayOther.setToggleGroup( ararayRubricationGroup );
         ararayOther.setOnAction( evt -> {
-        	Dialog<Color> d = createColorPickerDialog( "Rubrication Color", "Select a Ge'ez Rubrication Color", Color.RED, ስልት.ዓራራይ);
-        	d.showAndWait();
+        	Dialog<Color> d = createColorPickerDialog( "Rubrication Color", "Select a Ge'ez Rubrication Color", Color.BLACK, ስልት.ዓራራይ);
+        	Optional<Color> result = d.showAndWait();
+        	if ( result.isPresent() ) {
+        		String otherColor = getRGBString( d.getResult() );
+        		ararayMenu.setStyle( "-fx-font: 12px \"" + defaultFont + "\"; -fx-text-fill: " +  otherColor + ";" );
+        		ararayOther.setStyle( " -fx-text-fill: " + otherColor + ";" );
+	        	stripeMenu.getProperties().put( "lastSelected"  , ararayOther );
+	        	markUnknownMenuItem.setSelected( false ); 
+        	}
+        	else {
+        		// do not set this item as checked
+        		ararayOther.setSelected( false );
+            	RadioMenuItem selected  = (RadioMenuItem)stripeMenu.getProperties().get( "lastSelected" );
+            	if( selected != null )
+            		selected.setSelected( true );
+        	}
         });
         ararayMenu.getItems().addAll( ararayRed, ararayBlue, ararayGreen, ararayOther );
+        
+        markUnknownMenuItem.setOnAction(
+        		evt -> {
+        			markUnknown ^= markUnknown; // toggle, i think...
+        			stripeMenu.setStyle( "-fx-text-style: italic" ); // look this up, also set then "Mark Unknown is unchecked by rubrication
+        			for(MenuItem menu: stripeMenu.getItems() ) {
+        				menu.setStyle( "-fx-font: 12px \"" + defaultFont + "\";" );
+        				for( MenuItem color: ((Menu)menu).getItems() ) {
+        					((RadioMenuItem)color).setSelected( false );
+        				}
+        				((Menu)menu).getItems().get(3).setStyle( "" );
+        			}
+        		}
+        );
   
         
 
@@ -439,7 +513,7 @@ public final class MiliketChecker extends Application {
         fix121MenuItem.setOnAction( evt -> { fix121 = (fix121) ? false : true ; } );
         
         Menu optionsMenu = new Menu( "_Options" );
-        optionsMenu.getItems().addAll( checkMenu, stripeMenu, fix121MenuItem );
+        optionsMenu.getItems().addAll( markUnknownMenuItem, checkMenu, stripeMenu, fix121MenuItem );
         
         // add menu to menubar 
         leftBar.getMenus().addAll( fileMenu, optionsMenu );
