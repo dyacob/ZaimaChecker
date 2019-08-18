@@ -83,6 +83,7 @@ public final class MiliketChecker extends Application {
 	 
     CheckMiliket checker = null;
 	
+    
 	private void errorAlert(Exception ex, String header ) {
         Alert alert = new Alert(AlertType.ERROR);
         alert.setTitle( "An Exception has occured" );
@@ -90,6 +91,7 @@ public final class MiliketChecker extends Application {
         alert.setContentText( ex.getMessage() );
         alert.showAndWait();
 	}
+	
 	
     private static void configureFileChooser( final FileChooser fileChooser ) {      
     	fileChooser.setTitle("View Word Files");
@@ -100,6 +102,8 @@ public final class MiliketChecker extends Application {
         		new FileChooser.ExtensionFilter("*.docx", "*.docx")
         );
     }
+    
+    
     private void resetListView(ListView<Label> listView, Button convertButton)
     {
         int i = 0;
@@ -115,6 +119,7 @@ public final class MiliketChecker extends Application {
         }
         listView.refresh();    	
     }
+ 
     
     private String getRGBString( Color color ) {
     	return String.format("#%02X%02X%02X",
@@ -122,12 +127,14 @@ public final class MiliketChecker extends Application {
     		    (int)(color.getGreen()*255),
     		    (int)(color.getBlue()*255) );
     }
+ 
     
     private void setRubricationColor(ስልት silt, Color color) {
     	org.docx4j.wml.Color wordColor = new org.docx4j.wml.Color();
     	wordColor.setVal( getRGBString(color) );
     	rubricationColors.put( silt, wordColor );
     }
+
     
     private Dialog<Color> createColorPickerDialog(String action, String question, Color _default, ስልት silt) {
         Dialog<Color> dialog = new Dialog<>();
@@ -150,7 +157,8 @@ public final class MiliketChecker extends Application {
         });
         return dialog;
     }
-     
+
+    
     private Dialog<String> createColorDialogOld() {
     	Dialog<String>  dialog = new Dialog<>();
     	VBox vbox = new VBox();
@@ -168,6 +176,7 @@ public final class MiliketChecker extends Application {
     	//dialog.getDialogPane().get .getButtonTypes().add(vbox);
     	return dialog;
     }
+
     
     private final String osName = System.getProperty("os.name");
     private final String defaultFont = ( osName.equals("Mac OS X") ) ? "Kefa" : "Ebrima" ;
@@ -177,6 +186,7 @@ public final class MiliketChecker extends Application {
     	menu.getProperties().put( "lastSelected" , item );
     	other.setStyle( "" );
     }
+ 
     
     @Override
     public void start(final Stage stage) {
@@ -544,11 +554,8 @@ public final class MiliketChecker extends Application {
         stage.show();
 
     }
- 
-    public static void main(String[] args) {
-    		Application.launch(args);
-    }
 
+    
     private void processFile(File inputFile) {
         try {
         	String inputFilePath = inputFile.getPath();
@@ -563,7 +570,8 @@ public final class MiliketChecker extends Application {
         	Logger.getLogger( MiliketChecker.class.getName() ).log( Level.SEVERE, null, ex );
         }
     }
- 
+
+    
     private void openFile(File inputFile) {
         try {
         	String inputFilePath = inputFile.getPath();
@@ -577,5 +585,11 @@ public final class MiliketChecker extends Application {
         	Logger.getLogger( MiliketChecker.class.getName() ).log( Level.SEVERE, null, ex );
         }
     }
+
+    
+    public static void main(String[] args) {
+    		Application.launch(args);
+    }
+
     
 }
