@@ -15,9 +15,6 @@ import org.docx4j.wml.RPr;
 import org.docx4j.wml.STRubyAlign;
 import org.docx4j.wml.Text;
 
-import javafx.concurrent.Task;
-import javafx.scene.control.ProgressBar;
-
 import org.docx4j.wml.CTRuby;
 import org.docx4j.wml.CTRubyAlign;
 import org.docx4j.wml.CTRubyContent;
@@ -33,6 +30,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 
@@ -72,6 +70,8 @@ public class CheckMiliket {
 	private boolean rubricate = false;
 	private boolean fix121 = false;
 	private boolean markUnknown = true;
+	
+	private Set<String> miliketSet = null;
 	
 
 	/* for later, maybe....
@@ -146,9 +146,9 @@ public class CheckMiliket {
 	public CheckMiliket() throws Exception {
 		red.setVal( "FF0000" );
 		
-		readMap( "ድጓ",    DiguaMiliket, DiguaMiliketBySilt, "DiguaMiliket.txt" );
-		readMap( "ጾመ፡ድጓ", TsomeDiguaMiliket, TsomeDiguaMiliketBySilt, "TsomeDiguaMiliket.txt" );
-		readMap( "ምዕራፍ", MeerafMiliket, MeerafMiliketBySilt, "MeerafMiliket.txt" );
+		readMap( "ድጓ",    DiguaMiliket, DiguaMiliketBySilt, "DiguaMiliket2.txt" );
+		readMap( "ጾመ፡ድጓ", TsomeDiguaMiliket, TsomeDiguaMiliketBySilt, "TsomeDiguaMiliket2.txt" );
+		readMap( "ምዕራፍ", MeerafMiliket, MeerafMiliketBySilt, "MeerafMiliket2.txt" );
 		readMap( "ዚቅ",    ZiqMiliket, ZiqMiliketBySilt, "ZiqMiliket.txt" );
 		readMap( "ዝማሬ",  ZimarieMiliket, ZimarieMiliketBySilt, "ZimarieMiliket.txt" );
 		readMap( "ሌላቸው፡በምሕፃረ፡ቃል", LeilaMiliket, LeilaMiliketBySilt, "LeilaMiliket.txt" );
@@ -160,12 +160,14 @@ public class CheckMiliket {
 		rpr.setColor( red ); 
 	}
 	
-	protected boolean isValidMiliket(String annotation, HashMap<String,String> miliketMap) {
+	protected boolean isValidMiliket(String miliket, HashMap<String,String> miliketMap) {
 		
+		/*
 	    String miliket = Qirts.matcher(annotation).replaceAll("");
 	    if( "".equals(miliket) ) {
 	    	return true;
 	    }
+	    */
 
 		for(String key: miliketMap.keySet() ) {
 
@@ -208,36 +210,48 @@ public class CheckMiliket {
 	
 	// For a given book, check miliket over all silt
 	protected boolean isValidMiliket(String miliket) {
-		return isValidMiliket( miliket, this.bookFlag );
-	}	
-	// For a given book, check miliket over all silt
-	protected boolean isValidMiliket(String miliket, String book) {
-
-		if( book.equals( "all" ) ) {
-			for( String key: books.keySet() ) {
-				// System.out.println( "Checking Book [" + miliket + "]: " + key);
-				HashMap<String, String>  bookMap = books.get(key);
-				boolean isValid = isValidMiliket( miliket, bookMap );
-				if ( isValid == true ) {
-					return true;
-				}
+		for( String book: miliketSet ) {
+			// System.out.println( "Checking Book [" + miliket + "]: " + key);
+			HashMap<String, String>  bookMap = books.get(book);
+			boolean isValid = isValidMiliket( miliket, bookMap );
+			if ( isValid == true ) {
+				return true;
 			}
-		}
-		else {
-			HashMap<String, String> bookMap = books.get( book );
-		
-			return isValidMiliket( miliket, bookMap );
 		}
 		
 		return false;
+	}
+	
+	// For a given book, check miliket over all silt
+	protected boolean isValidMiliket(String miliket, String book) {
+			HashMap<String, String> bookMap = books.get( book );
+		
+			return isValidMiliket( miliket, bookMap );
 	}
 	
 	
 	// For a given book, check miliket for a specific silt
 	// For a given book and silt, check miliket
 	protected boolean isValidMiliket(String miliket, String book, ስልት silt) {
+		miliket = miliket.trim();
+		if ( "".equals( miliket ) ) {
+			return true; // ignore
+			// in the future add an option to remove empty <rt>
+		}
+		
+	    String test = Qirts.matcher(miliket).replaceAll("");
+	    if( "".equals(test) ) {
+	    	return true;
+	    }
+	    
+		System.out.println( "Checking: " + book + " for " + miliket + " under " + silt );
+		
 
 		HashMap<ስልት, HashMap<String,String>> siltByBookMap = booksByMiliket.get( book );
+		
+		if(! siltByBookMap.containsKey( silt ) ) {
+			return false;
+		}
 		HashMap<String, String> siltMap = siltByBookMap.get( silt );
 		
 		return isValidMiliket( miliket, siltMap );
@@ -395,8 +409,10 @@ public class CheckMiliket {
 
 	}
 
-	public void setMiliketSet( String miliketSet )
+	public void setMiliketSet( Set<String> miliketSet )
 	{
+		this.miliketSet = miliketSet;
+		/*
 		switch( miliketSet.toLowerCase() ) {
 			case "digua":
 			case "ድጓ":
@@ -423,13 +439,14 @@ public class CheckMiliket {
 				System.err.println( "The miliket collection \"" + miliketSet + "\", is not recognized" );
 				System.exit(0);
 		}
+		*/
 	}
 	
-	public void setOptions( String miliketSet, boolean markUnknown, boolean fix121, Map<ስልት,Color> rubricationColors ) {
+	public void setOptions( Set<String> miliketSet, boolean markUnknown, boolean fix121, Map<ስልት,Color> rubricationColors ) {
 		setMiliketSet( miliketSet );
 		this.markUnknown = markUnknown;
 		this.fix121 = fix121;
-		if( rubricationColors != null  ) {
+		if(! rubricationColors.isEmpty()  ) {
 			this.markUnknown = false;
 			this.rubricate = true;
 		}
@@ -441,6 +458,7 @@ public class CheckMiliket {
 		this.markUnknown = false;
 		this.rubricate = false;
 		this.bookFlag = "all";
+		this.miliketSet = null;
 	}
 	
 	public void process( final File inputFile, final File outputFile ) throws Exception

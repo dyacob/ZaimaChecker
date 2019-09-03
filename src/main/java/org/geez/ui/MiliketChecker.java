@@ -4,17 +4,21 @@ package org.geez.ui;
 import java.awt.Desktop;
 import java.io.File;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.print.attribute.standard.MediaSize.Other;
 
 import org.geez.ዜማ.CheckMiliket;
-import org.opendope.questions.Response.Fixed.Item;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -34,6 +38,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Hyperlink;
@@ -66,9 +71,14 @@ public final class MiliketChecker extends Application {
 	private static final String ድጓ = "ድጓ";
 	private static final String ጾመ_ድጓ = "ጾመ፡ድጓ";
 	private static final String ምዕራፍ = "ምዕራፍ";
+	private static final String ዝማሬ = "ዝማሬ";
+	private static final String ዚቅ = "ዚቅ";
 	private static final String ኹሉም = "ኹሉም";
+	String collections[] = { ድጓ, ጾመ_ድጓ, ምዕራፍ, ዝማሬ, ዚቅ };
 
-	private String miliketSet = ኹሉም; // alphabetic based default
+
+	private String miliketSetx = ኹሉም; // alphabetic based default
+	private Set<String> miliketSet = new HashSet<String>( Arrays.asList(collections) );
 	private boolean openOutput = true;
 	private boolean fix121 = false;
 	private boolean markUnknown = true;
@@ -219,7 +229,18 @@ public final class MiliketChecker extends Application {
         listView.autosize();
         
         
-        final Button convertButton = new Button("Check File(s)");
+
+        Menu checkMenu = new Menu( "Miliket Set" );
+       
+        for(String book: miliketSet) {
+        	CheckMenuItem checkItem = new CheckMenuItem( book );
+            checkItem.setStyle("-fx-font: 12px \"" + defaultFont + "\";");
+            checkItem.setSelected(true);
+            checkMenu.getItems().add( checkItem );
+        }
+        
+        
+        final Button convertButton = new Button("Check");
         convertButton.setDisable( true );
 
         convertButton.setOnAction(
@@ -232,7 +253,14 @@ public final class MiliketChecker extends Application {
                         		// resetListView( listView, convertButton );
                         	// }
                     		
-                    		checker.setOptions(miliketSet, markUnknown, fix121, rubricationColors);
+                        	Set<String> selectedBooks = new HashSet<String>();
+                        	for(MenuItem item: checkMenu.getItems() ) {
+                        		if( ((CheckMenuItem)item).isSelected() ) {
+                        			selectedBooks.add( item.getText() );
+                        		}
+                        	}
+                        	
+                    		checker.setOptions(selectedBooks, markUnknown, fix121, rubricationColors);
                     		
                         	int i = 0;
                             ObservableList<Label> itemList = listView.getItems();
@@ -263,7 +291,7 @@ public final class MiliketChecker extends Application {
         );
       
         
-        CheckBox openFilesCheckbox = new CheckBox( "Open file(s) after checking?");
+        CheckBox openFilesCheckbox = new CheckBox( "Open file(s) after checking?" );
         openFilesCheckbox.selectedProperty().addListener(new ChangeListener<Boolean>() {
             public void changed(ObservableValue<? extends Boolean> ov,
                 Boolean old_val, Boolean new_val) {
@@ -285,10 +313,27 @@ public final class MiliketChecker extends Application {
                 @Override
                 public void handle(final ActionEvent e) {
                 	listView.getItems().clear();
-                	configureFileChooser(fileChooser);    
-                    inputFileList = fileChooser.showOpenMultipleDialog( stage );
+                	configureFileChooser(fileChooser);
+                	List<File> selectedFiles = fileChooser.showOpenMultipleDialog( stage );
                     
-                    if ( inputFileList != null ) {
+                    if ( selectedFiles != null ) {
+                    	inputFileList = new ArrayList<File>( selectedFiles );
+	                    if ( inputFileList.size() == 1 ) {
+	                    	openFilesCheckbox.setText( "Open file after conversion?" );
+	                    } else {
+	                    	openFilesCheckbox.setText( "Open files after conversion?" );                    	
+	                    }
+	                    
+	                    Collections.sort( inputFileList, new Comparator<File>() {
+	                        @Override
+	                        public int compare(File o1, File o2) {
+	                            String n1 = o1.getName();
+	                            String n2 = o2.getName();
+	                            return n1.compareTo(n2);
+	                        }
+	
+	                    });
+                    
                     	for( File file: inputFileList) {
                     		Label rowLabel = new Label( file.getName() );
                     		data.add( rowLabel );
@@ -352,20 +397,25 @@ public final class MiliketChecker extends Application {
         MenuBar leftBar = new MenuBar(); 
         RadioMenuItem markUnknownMenuItem = new RadioMenuItem( "Mark Unknown" );
         markUnknownMenuItem.setSelected( true );
-        
 
-        Menu checkMenu = new Menu( "Miliket Set" );
-       
+        /*
         RadioMenuItem checkItem1 = new RadioMenuItem( ድጓ );
         RadioMenuItem checkItem2 = new RadioMenuItem( ጾመ_ድጓ );
         RadioMenuItem checkItem3 = new RadioMenuItem( ምዕራፍ );
+        RadioMenuItem checkItem4 = new RadioMenuItem( ዝማሬ );
+        RadioMenuItem checkItem5 = new RadioMenuItem( ዚቅ );
         checkItem1.setStyle("-fx-font: 12px \"" + defaultFont + "\";");
         checkItem2.setStyle("-fx-font: 12px \"" + defaultFont + "\";");
         checkItem3.setStyle("-fx-font: 12px \"" + defaultFont + "\";");
+        checkItem4.setStyle("-fx-font: 12px \"" + defaultFont + "\";");
+        checkItem5.setStyle("-fx-font: 12px \"" + defaultFont + "\";");
         checkItem1.setSelected(true);
         checkItem2.setSelected(true);
         checkItem3.setSelected(true);
-        checkMenu.getItems().addAll( checkItem1, checkItem2, checkItem3 );
+        checkItem4.setSelected(true);
+        checkItem5.setSelected(true);
+        checkMenu.getItems().addAll( checkItem1, checkItem2, checkItem3, checkItem4, checkItem5 );
+        */
         
         Menu stripeMenu = new Menu( "Rubricate" );
         Menu geezMenu   = new Menu( "ግዕዝ" );
@@ -383,23 +433,25 @@ public final class MiliketChecker extends Application {
         geezRed.setStyle( "-fx-text-fill: red;" );
         geezRed.setToggleGroup( geezRubricationGroup );
         geezRed.setOnAction(
-        		evt -> { markUnknownMenuItem.setSelected( false ); setSelectedRubricationColor( stripeMenu, geezMenu, geezRed, geezOther, ስልት.ግዕዝ, Color.RED, "red" ); }
+        		evt -> { markUnknownMenuItem.setSelected( false ); markUnknownMenuItem.setStyle( "-fx-font-style: italic;" ); setSelectedRubricationColor( stripeMenu, geezMenu, geezRed, geezOther, ስልት.ግዕዝ, Color.RED, "red" ); convertButton.setText( "Rubricate"); }
         );
         RadioMenuItem geezBlue = new RadioMenuItem( "● Blue" );
         geezBlue.setStyle( "-fx-text-fill: blue;" );
         geezBlue.setToggleGroup( geezRubricationGroup );
         geezBlue.setOnAction(
-        		evt -> { markUnknownMenuItem.setSelected( false ); setSelectedRubricationColor( stripeMenu, geezMenu, geezBlue, geezOther, ስልት.ግዕዝ, Color.BLUE, "blue" ); }
+        		evt -> { markUnknownMenuItem.setSelected( false ); markUnknownMenuItem.setStyle( "-fx-font-style: italic;" ); setSelectedRubricationColor( stripeMenu, geezMenu, geezBlue, geezOther, ስልት.ግዕዝ, Color.BLUE, "blue" ); convertButton.setText( "Rubricate"); }
         );
         RadioMenuItem geezGreen = new RadioMenuItem( "● Green" );
         geezGreen.setStyle( "-fx-text-fill: green;" );
         geezGreen.setToggleGroup( geezRubricationGroup );
         geezGreen.setOnAction(
-        		evt -> { markUnknownMenuItem.setSelected( false ); setSelectedRubricationColor( stripeMenu, geezMenu, geezGreen, geezOther, ስልት.ግዕዝ, Color.GREEN, "green" ); }
+        		evt -> { markUnknownMenuItem.setSelected( false ); markUnknownMenuItem.setStyle( "-fx-font-style: italic;" ); setSelectedRubricationColor( stripeMenu, geezMenu, geezGreen, geezOther, ስልት.ግዕዝ, Color.GREEN, "green" ); convertButton.setText( "Rubricate"); }
         );
         
         geezOther.setToggleGroup( geezRubricationGroup );
         geezOther.setOnAction( evt -> {
+            markUnknownMenuItem.setStyle( "-fx-font-style: italic;" );
+            convertButton.setText( "Rubricate");
         	Dialog<Color> d = createColorPickerDialog( "Rubrication Color", "Select a Ge'ez Rubrication Color", Color.BLACK, ስልት.ግዕዝ );
         	Optional<Color> result = d.showAndWait();
         	if ( result.isPresent() ) {
@@ -425,23 +477,25 @@ public final class MiliketChecker extends Application {
         izelRed.setStyle( "-fx-text-fill: red;" );
         izelRed.setToggleGroup( izelRubricationGroup );
         izelRed.setOnAction(
-        		evt -> { markUnknownMenuItem.setSelected( false ); markUnknownMenuItem.setStyle( "-fx-font-style: italic;" ); setSelectedRubricationColor( stripeMenu, izelMenu, izelRed, izelOther, ስልት.ዕዝል, Color.RED, "red" ); }
+        		evt -> { markUnknownMenuItem.setSelected( false ); markUnknownMenuItem.setStyle( "-fx-font-style: italic;" ); setSelectedRubricationColor( stripeMenu, izelMenu, izelRed, izelOther, ስልት.ዕዝል, Color.RED, "red" ); convertButton.setText( "Rubricate"); }
         );
         RadioMenuItem izelBlue = new RadioMenuItem( "● Blue" );
         izelBlue.setStyle( "-fx-text-fill: blue;" );
         izelBlue.setToggleGroup( izelRubricationGroup );
         izelBlue.setOnAction(
-        		evt -> { markUnknownMenuItem.setSelected( false ); markUnknownMenuItem.setStyle( "-fx-font-style: italic;" );  setSelectedRubricationColor( stripeMenu, izelMenu, izelBlue, izelOther, ስልት.ዕዝል, Color.BLUE, "blue" ); }
+        		evt -> { markUnknownMenuItem.setSelected( false ); markUnknownMenuItem.setStyle( "-fx-font-style: italic;" );  setSelectedRubricationColor( stripeMenu, izelMenu, izelBlue, izelOther, ስልት.ዕዝል, Color.BLUE, "blue" ); convertButton.setText( "Rubricate"); }
         );
         RadioMenuItem izelGreen = new RadioMenuItem( "● Green" );
         izelGreen.setStyle( "-fx-text-fill: green;" );
         izelGreen.setToggleGroup( izelRubricationGroup );
         izelGreen.setOnAction(
-        		evt -> { markUnknownMenuItem.setSelected( false ); markUnknownMenuItem.setStyle( "-fx-font-style: italic;" );  setSelectedRubricationColor( stripeMenu, izelMenu, izelGreen, izelOther, ስልት.ዕዝል, Color.GREEN, "green" ); }
+        		evt -> { markUnknownMenuItem.setSelected( false ); markUnknownMenuItem.setStyle( "-fx-font-style: italic;" );  setSelectedRubricationColor( stripeMenu, izelMenu, izelGreen, izelOther, ስልት.ዕዝል, Color.GREEN, "green" ); convertButton.setText( "Rubricate"); }
         );
 
         izelOther.setToggleGroup( izelRubricationGroup );
         izelOther.setOnAction( evt -> {
+            markUnknownMenuItem.setStyle( "-fx-font-style: italic;" );
+            convertButton.setText( "Rubricate");
         	Dialog<Color> d = createColorPickerDialog( "Rubrication Color", "Select a Ge'ez Rubrication Color", Color.BLACK, ስልት.ዕዝል );
         	Optional<Color> result = d.showAndWait();
         	if ( result.isPresent() ) {
@@ -467,23 +521,25 @@ public final class MiliketChecker extends Application {
         ararayRed.setStyle( "-fx-text-fill: red;" );
         ararayRed.setToggleGroup( ararayRubricationGroup );
         ararayRed.setOnAction(
-        		evt -> { markUnknownMenuItem.setSelected( false ); setSelectedRubricationColor( stripeMenu, ararayMenu, ararayRed, ararayOther, ስልት.ዓራራይ, Color.RED, "red" ); }
+        		evt -> { markUnknownMenuItem.setSelected( false );  markUnknownMenuItem.setStyle( "-fx-font-style: italic;" ); setSelectedRubricationColor( stripeMenu, ararayMenu, ararayRed, ararayOther, ስልት.ዓራራይ, Color.RED, "red" ); convertButton.setText( "Rubricate"); }
         );
         RadioMenuItem ararayBlue = new RadioMenuItem( "● Blue" );
         ararayBlue.setStyle( "-fx-text-fill: blue;" );
         ararayBlue.setToggleGroup( ararayRubricationGroup );
         ararayBlue.setOnAction(
-        		evt -> { markUnknownMenuItem.setSelected( false ); setSelectedRubricationColor( stripeMenu, ararayMenu, ararayBlue, ararayOther, ስልት.ዓራራይ, Color.BLUE, "blue" ); }
+        		evt -> { markUnknownMenuItem.setSelected( false );  markUnknownMenuItem.setStyle( "-fx-font-style: italic;" ); setSelectedRubricationColor( stripeMenu, ararayMenu, ararayBlue, ararayOther, ስልት.ዓራራይ, Color.BLUE, "blue" ); convertButton.setText( "Rubricate"); }
         );
         RadioMenuItem ararayGreen = new RadioMenuItem( "● Green" );
         ararayGreen.setStyle( "-fx-text-fill: green;" );
         ararayGreen.setToggleGroup( ararayRubricationGroup );
         ararayGreen.setOnAction(
-        		evt -> { markUnknownMenuItem.setSelected( false ); setSelectedRubricationColor( stripeMenu, ararayMenu, ararayGreen, ararayOther, ስልት.ዓራራይ, Color.GREEN, "green" ); }
+        		evt -> { markUnknownMenuItem.setSelected( false );  markUnknownMenuItem.setStyle( "-fx-font-style: italic;" ); setSelectedRubricationColor( stripeMenu, ararayMenu, ararayGreen, ararayOther, ስልት.ዓራራይ, Color.GREEN, "green" ); convertButton.setText( "Rubricate"); }
         );
 
         ararayOther.setToggleGroup( ararayRubricationGroup );
         ararayOther.setOnAction( evt -> {
+            markUnknownMenuItem.setStyle( "-fx-font-style: italic;" );
+            convertButton.setText( "Rubricate");
         	Dialog<Color> d = createColorPickerDialog( "Rubrication Color", "Select a Ge'ez Rubrication Color", Color.BLACK, ስልት.ዓራራይ);
         	Optional<Color> result = d.showAndWait();
         	if ( result.isPresent() ) {
@@ -506,6 +562,8 @@ public final class MiliketChecker extends Application {
         markUnknownMenuItem.setOnAction(
         		evt -> {
         			markUnknown ^= markUnknown; // toggle, i think...
+        			convertButton.setText( "Check" );
+        			markUnknownMenuItem.setStyle( "" );
         			stripeMenu.setStyle( "-fx-text-style: italic" ); // look this up, also set then "Mark Unknown is unchecked by rubrication
         			for(MenuItem menu: stripeMenu.getItems() ) {
         				menu.setStyle( "-fx-font: 12px \"" + defaultFont + "\";" );
