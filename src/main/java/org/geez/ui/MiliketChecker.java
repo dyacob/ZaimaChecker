@@ -73,11 +73,13 @@ public final class MiliketChecker extends Application {
 	private static final String ምዕራፍ = "ምዕራፍ";
 	private static final String ዝማሬ = "ዝማሬ";
 	private static final String ዚቅ = "ዚቅ";
-	private static final String ኹሉም = "ኹሉም";
-	String collections[] = { ድጓ, ጾመ_ድጓ, ምዕራፍ, ዝማሬ, ዚቅ };
+	private static final String ሌላ_አማርኛ = "ሌላቸው፡በምሕፃረ፡ቃል";
+	private static final String Other_TBD = "Other (to be categorized)";
+	// private static final String ኹሉም = "ኹሉም";
+	String collections[] = { ድጓ, ጾመ_ድጓ, ምዕራፍ, ዝማሬ, ዚቅ, ሌላ_አማርኛ, Other_TBD };
 
 
-	private String miliketSetx = ኹሉም; // alphabetic based default
+	// private String miliketSetx = ኹሉም; // alphabetic based default
 	private Set<String> miliketSet = new HashSet<String>( Arrays.asList(collections) );
 	private boolean openOutput = true;
 	private boolean fix121 = false;

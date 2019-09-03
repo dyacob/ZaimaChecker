@@ -152,7 +152,7 @@ public class CheckMiliket {
 		readMap( "ዚቅ",    ZiqMiliket, ZiqMiliketBySilt, "ZiqMiliket.txt" );
 		readMap( "ዝማሬ",  ZimarieMiliket, ZimarieMiliketBySilt, "ZimarieMiliket.txt" );
 		readMap( "ሌላቸው፡በምሕፃረ፡ቃል", LeilaMiliket, LeilaMiliketBySilt, "LeilaMiliket.txt" );
-		readMap( "TBD",    ToBeDeterminedMiliket, ToBeDeterminedMiliketBySilt, "ToBeDetermined.txt" );
+		readMap( "Other (to be categorized)",    ToBeDeterminedMiliket, ToBeDeterminedMiliketBySilt, "ToBeDetermined.txt" );
 	}
 	
 	protected void markUnknown(R r) {
