@@ -73,17 +73,20 @@ public final class MiliketChecker extends Application {
 	private static final String ምዕራፍ = "ምዕራፍ";
 	private static final String ዝማሬ = "ዝማሬ";
 	private static final String ዚቅ = "ዚቅ";
+	private static final String ቅዳሴ = "ቅዳሴ";
+	private static final String መዋሥዕት = "መዋሥዕት";
 	private static final String ሌላ_አማርኛ = "ሌላቸው፡በምሕፃረ፡ቃል";
 	private static final String Other_TBD = "Other (to be categorized)";
 	// private static final String ኹሉም = "ኹሉም";
-	String collections[] = { ድጓ, ጾመ_ድጓ, ምዕራፍ, ዝማሬ, ዚቅ, ሌላ_አማርኛ, Other_TBD };
+	String collections[] = { ድጓ, ጾመ_ድጓ, ምዕራፍ, ዝማሬ, /*መዋሥዕት,*/ ዚቅ, /*ቅዳሴ,*/ ሌላ_አማርኛ, Other_TBD };
 
 
 	// private String miliketSetx = ኹሉም; // alphabetic based default
-	private Set<String> miliketSet = new HashSet<String>( Arrays.asList(collections) );
+	private ArrayList<String> miliketSet = new ArrayList<String>( Arrays.asList(collections) );
 	private boolean openOutput = true;
 	private boolean fix121 = false;
 	private boolean markUnknown = true;
+	private boolean removeEmpty = true;
 	
 	private List<File> inputFileList = null;
 	
@@ -262,7 +265,7 @@ public final class MiliketChecker extends Application {
                         		}
                         	}
                         	
-                    		checker.setOptions(selectedBooks, markUnknown, fix121, rubricationColors);
+                    		checker.setOptions(selectedBooks, markUnknown, fix121, true, rubricationColors);
                     		
                         	int i = 0;
                             ObservableList<Label> itemList = listView.getItems();
@@ -582,8 +585,13 @@ public final class MiliketChecker extends Application {
         MenuItem fix121MenuItem = new RadioMenuItem( "Set \"1-2-1\" to \"centered\"?" );
         fix121MenuItem.setOnAction( evt -> { fix121 = (fix121) ? false : true ; } );
         
+        MenuItem removeEmptyMenuItem = new RadioMenuItem( "Remove empty nodes?" );
+        removeEmptyMenuItem.setOnAction( evt -> { 
+        	removeEmpty = (removeEmpty) ? false : true ; }
+        );
+        
         Menu optionsMenu = new Menu( "_Options" );
-        optionsMenu.getItems().addAll( markUnknownMenuItem, checkMenu, stripeMenu, fix121MenuItem );
+        optionsMenu.getItems().addAll( markUnknownMenuItem, checkMenu, stripeMenu, fix121MenuItem, removeEmptyMenuItem );
         
         // add menu to menubar 
         leftBar.getMenus().addAll( fileMenu, optionsMenu );

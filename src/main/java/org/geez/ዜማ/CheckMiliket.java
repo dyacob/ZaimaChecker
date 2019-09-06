@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -70,6 +71,7 @@ public class CheckMiliket {
 	private boolean rubricate = false;
 	private boolean fix121 = false;
 	private boolean markUnknown = true;
+	private boolean removeEmpty = true;
 	
 	private Set<String> miliketSet = null;
 	
@@ -350,13 +352,13 @@ public class CheckMiliket {
 	}
 	*/
 
-	public void processObjects( final JaxbXmlPart<?> part ) throws Docx4JException
+	public void processObjects( final JaxbXmlPart<?> part, List<Object> content ) throws Docx4JException
 	{
 			
 		ClassFinder finder = new ClassFinder( CTRuby.class );
 		new TraversalUtil(part.getContents(), finder);
 	
-
+		int index = 0;
 		for (Object o : finder.results) {
 			Object o2 = XmlUtils.unwrap(o);
 					
@@ -379,32 +381,55 @@ public class CheckMiliket {
 				List<Object> rtObjects = rt.getEGRubyContent();
 				R r = (org.docx4j.wml.R)rtObjects.get(0);
 
-				List<Object> rObjects = r .getContent();		
+				List<Object> rObjects = r.getContent();	
+				boolean clearObjects = false;
 				for ( Object x : rObjects ) {
 					Object x2 = XmlUtils.unwrap(x);
 					if ( x2 instanceof org.docx4j.wml.Text ) {
 							Text txt = (org.docx4j.wml.Text)x2;
 							// this line is here for testing, later make the book a command line parameter
-							if(! isValidMiliket( txt.getValue() ) ) {
+							String miliket = txt.getValue();
+							if(! isValidMiliket( miliket ) ) {
 								if ( markUnknown ) {
 									markUnknown( r );
 								}
 							}
 							else if( rubricate ) {
 								// get the silt that corresponds to the r
-								rubricate( r, txt.getValue() );
+								rubricate( r, miliket );
+							}
+							if( removeEmpty ) {
+								if( "".equals( miliket.trim() ) ) {
+									clearObjects = true;
+								}
 							}
 					}
 					else {
 						// System.err.println( "Found: " + x2.getClass() );
 					}
 				}
+				if( clearObjects ) {
+					R rubyParent = (R)ruby.getParent();
+					CTRubyContent rb = ruby.getRubyBase();
+					List<Object> rbObjects = rb.getEGRubyContent();
+					r = (org.docx4j.wml.R)rbObjects.get(0);
+					rObjects = r.getContent();	
+					for ( Object x : rObjects ) {
+						Object x2 = XmlUtils.unwrap(x);
+						if ( x2 instanceof org.docx4j.wml.Text ) {
+							Text txt = (org.docx4j.wml.Text)x2;
+							txt.setParent(rubyParent);
+							rubyParent.getContent().add(txt);
+						}
+					}
+					rubyParent.getContent().remove(0);
+				}
 				
 			} else {
 				System.err.println( XmlUtils.marshaltoString(o, true, true) );
 				// throw exception
 			}
-			
+			index++;
 		}
 
 	}
@@ -442,10 +467,11 @@ public class CheckMiliket {
 		*/
 	}
 	
-	public void setOptions( Set<String> miliketSet, boolean markUnknown, boolean fix121, Map<ስልት,Color> rubricationColors ) {
+	public void setOptions( Set<String> miliketSet, boolean markUnknown, boolean fix121,  boolean removeEmpty, Map<ስልት,Color> rubricationColors ) {
 		setMiliketSet( miliketSet );
 		this.markUnknown = markUnknown;
-		this.fix121 = fix121;
+		this.fix121      = fix121;
+		this.removeEmpty = removeEmpty;
 		if(! rubricationColors.isEmpty()  ) {
 			this.markUnknown = false;
 			this.rubricate = true;
@@ -465,11 +491,12 @@ public class CheckMiliket {
 	{
 		WordprocessingMLPackage wordMLPackage = WordprocessingMLPackage.load( inputFile );		
 		MainDocumentPart documentPart = wordMLPackage.getMainDocumentPart();
-       	processObjects( documentPart );
+		List<Object> content = documentPart.getContent();
+       	processObjects( documentPart, content );
             
       	if( documentPart.hasFootnotesPart() ) {
       		FootnotesPart footnotesPart = documentPart.getFootnotesPart();
-      		processObjects( footnotesPart );
+      		processObjects( footnotesPart, content );
       	}
 
       	wordMLPackage.save( outputFile );
