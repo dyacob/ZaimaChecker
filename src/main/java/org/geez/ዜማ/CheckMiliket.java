@@ -47,6 +47,13 @@ public class CheckMiliket {
 	private HashMap<String,String> MeerafMiliket = new HashMap<String,String>();
 	private HashMap<ስልት, HashMap<String,String>> MeerafMiliketBySilt = new HashMap< ስልት, HashMap<String,String> >();
 	
+	
+	private HashMap<String,String> MewasetMiliket = new HashMap<String,String>();
+	private HashMap<ስልት, HashMap<String,String>> MewasetMiliketBySilt = new HashMap< ስልት, HashMap<String,String> >();
+	
+	private HashMap<String,String> QidasieMiliket = new HashMap<String,String>();
+	private HashMap<ስልት, HashMap<String,String>> QidasieMiliketBySilt = new HashMap< ስልት, HashMap<String,String> >();
+	
 	private HashMap<String,String> ZiqMiliket = new HashMap<String,String>();
 	private HashMap<ስልት, HashMap<String,String>> ZiqMiliketBySilt = new HashMap< ስልት, HashMap<String,String> >();
 	
@@ -63,7 +70,7 @@ public class CheckMiliket {
 	private Map<String, HashMap<ስልት, HashMap<String,String>>> booksByMiliket = new HashMap<String, HashMap< ስልት, HashMap<String,String> >>();
 	
 	private Pattern Qirts = Pattern.compile( "[᎐᎔᎗᎓᎒᎑᎙᎕᎖᎘\\s]+" );
-	private String bookFlag = "all";
+	// private String bookFlag = "all";
 	
 	Map<ስልት,Color> rubricationColors = null;
 	private final Color red = new Color();
@@ -151,6 +158,8 @@ public class CheckMiliket {
 		readMap( "ድጓ",    DiguaMiliket, DiguaMiliketBySilt, "DiguaMiliket2.txt" );
 		readMap( "ጾመ፡ድጓ", TsomeDiguaMiliket, TsomeDiguaMiliketBySilt, "TsomeDiguaMiliket2.txt" );
 		readMap( "ምዕራፍ", MeerafMiliket, MeerafMiliketBySilt, "MeerafMiliket2.txt" );
+		readMap( "መዋሥዕት", MewasetMiliket, MewasetMiliketBySilt, "MewasetMiliket.txt" );
+		readMap( "ቅዳሴ",   QidasieMiliket, QidasieMiliketBySilt, "QidasieMiliket.txt" );
 		readMap( "ዚቅ",    ZiqMiliket, ZiqMiliketBySilt, "ZiqMiliket.txt" );
 		readMap( "ዝማሬ",  ZimarieMiliket, ZimarieMiliketBySilt, "ZimarieMiliket.txt" );
 		readMap( "ሌላቸው፡በምሕፃረ፡ቃል", LeilaMiliket, LeilaMiliketBySilt, "LeilaMiliket.txt" );
@@ -483,7 +492,7 @@ public class CheckMiliket {
 		this.fix121 = false;
 		this.markUnknown = false;
 		this.rubricate = false;
-		this.bookFlag = "all";
+		// this.bookFlag = "all";
 		this.miliketSet = null;
 	}
 	
