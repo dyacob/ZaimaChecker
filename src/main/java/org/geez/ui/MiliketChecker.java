@@ -75,10 +75,10 @@ public final class MiliketChecker extends Application {
 	private static final String ዚቅ = "ዚቅ";
 	private static final String ቅዳሴ = "ቅዳሴ";
 	private static final String መዋሥዕት = "መዋሥዕት";
-	private static final String ሌላ_አማርኛ = "ሌላቸው፡በምሕፃረ፡ቃል";
+	private static final String ሌላ_አማርኛ = "ሌላቸው፡በምሕፃረ፡ቃል፡";
 	private static final String Other_TBD = "Other (to be categorized)";
 	// private static final String ኹሉም = "ኹሉም";
-	String collections[] = { ድጓ, ጾመ_ድጓ, ምዕራፍ, ዝማሬ, /*መዋሥዕት,*/ ዚቅ, /*ቅዳሴ,*/ ሌላ_አማርኛ, Other_TBD };
+	String collections[] = { ድጓ, ጾመ_ድጓ, ምዕራፍ, ዝማሬ, መዋሥዕት, ዚቅ, ቅዳሴ, ሌላ_አማርኛ, Other_TBD };
 
 
 	// private String miliketSetx = ኹሉም; // alphabetic based default
@@ -403,24 +403,6 @@ public final class MiliketChecker extends Application {
         RadioMenuItem markUnknownMenuItem = new RadioMenuItem( "Mark Unknown" );
         markUnknownMenuItem.setSelected( true );
 
-        /*
-        RadioMenuItem checkItem1 = new RadioMenuItem( ድጓ );
-        RadioMenuItem checkItem2 = new RadioMenuItem( ጾመ_ድጓ );
-        RadioMenuItem checkItem3 = new RadioMenuItem( ምዕራፍ );
-        RadioMenuItem checkItem4 = new RadioMenuItem( ዝማሬ );
-        RadioMenuItem checkItem5 = new RadioMenuItem( ዚቅ );
-        checkItem1.setStyle("-fx-font: 12px \"" + defaultFont + "\";");
-        checkItem2.setStyle("-fx-font: 12px \"" + defaultFont + "\";");
-        checkItem3.setStyle("-fx-font: 12px \"" + defaultFont + "\";");
-        checkItem4.setStyle("-fx-font: 12px \"" + defaultFont + "\";");
-        checkItem5.setStyle("-fx-font: 12px \"" + defaultFont + "\";");
-        checkItem1.setSelected(true);
-        checkItem2.setSelected(true);
-        checkItem3.setSelected(true);
-        checkItem4.setSelected(true);
-        checkItem5.setSelected(true);
-        checkMenu.getItems().addAll( checkItem1, checkItem2, checkItem3, checkItem4, checkItem5 );
-        */
         
         Menu stripeMenu = new Menu( "Rubricate" );
         Menu geezMenu   = new Menu( "ግዕዝ" );
@@ -581,17 +563,18 @@ public final class MiliketChecker extends Application {
         );
   
         
-
-        MenuItem fix121MenuItem = new RadioMenuItem( "Set \"1-2-1\" to \"centered\"?" );
+        Menu fixesMenu = new Menu( "Fixes" );
+        MenuItem fix121MenuItem = new RadioMenuItem( "Set \"1-2-1\" to \"centered\"" );
         fix121MenuItem.setOnAction( evt -> { fix121 = (fix121) ? false : true ; } );
         
-        MenuItem removeEmptyMenuItem = new RadioMenuItem( "Remove empty nodes?" );
+        MenuItem removeEmptyMenuItem = new RadioMenuItem( "Remove empty <rt> nodes" );
         removeEmptyMenuItem.setOnAction( evt -> { 
         	removeEmpty = (removeEmpty) ? false : true ; }
         );
+        fixesMenu.getItems().addAll( fix121MenuItem, removeEmptyMenuItem );
         
         Menu optionsMenu = new Menu( "_Options" );
-        optionsMenu.getItems().addAll( markUnknownMenuItem, checkMenu, stripeMenu, fix121MenuItem, removeEmptyMenuItem );
+        optionsMenu.getItems().addAll( markUnknownMenuItem, checkMenu, stripeMenu, fixesMenu );
         
         // add menu to menubar 
         leftBar.getMenus().addAll( fileMenu, optionsMenu );
