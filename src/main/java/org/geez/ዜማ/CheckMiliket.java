@@ -1,4 +1,4 @@
-package org.geez.zaima;
+package org.geez.ዜማ;
 
 import org.docx4j.TraversalUtil;
 import org.docx4j.XmlUtils;
@@ -13,12 +13,7 @@ import org.docx4j.openpackaging.parts.JaxbXmlPart;
 import org.docx4j.wml.R;
 import org.docx4j.wml.RPr;
 import org.docx4j.wml.STRubyAlign;
-import org.docx4j.wml.RFonts;
 import org.docx4j.wml.Text;
-
-import javafx.application.Platform;
-import javafx.concurrent.Task;
-import javafx.scene.control.ProgressBar;
 
 import org.docx4j.wml.CTRuby;
 import org.docx4j.wml.CTRubyAlign;
@@ -33,58 +28,79 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
-
 
 
 public class CheckMiliket {
 
 
 	private HashMap<String,String> DiguaMiliket = new HashMap<String,String>();
-	private HashMap<String, HashMap<String,String>> DiguaMiliketBySilt = new HashMap< String, HashMap<String,String> >();
+	private HashMap<ስልት, HashMap<String,String>> DiguaMiliketBySilt = new HashMap< ስልት, HashMap<String,String> >();
 
 	private HashMap<String,String> TsomeDiguaMiliket = new HashMap<String,String>();
-	private HashMap<String, HashMap<String,String>> TsomeDiguaMiliketBySilt = new HashMap< String, HashMap<String,String> >();
+	private HashMap<ስልት, HashMap<String,String>> TsomeDiguaMiliketBySilt = new HashMap< ስልት, HashMap<String,String> >();
 	
 	private HashMap<String,String> MeerafMiliket = new HashMap<String,String>();
-	private HashMap<String, HashMap<String,String>> MeerafMiliketBySilt = new HashMap< String, HashMap<String,String> >();
+	private HashMap<ስልት, HashMap<String,String>> MeerafMiliketBySilt = new HashMap< ስልት, HashMap<String,String> >();
+	
+	
+	private HashMap<String,String> MewasetMiliket = new HashMap<String,String>();
+	private HashMap<ስልት, HashMap<String,String>> MewasetMiliketBySilt = new HashMap< ስልት, HashMap<String,String> >();
+	
+	private HashMap<String,String> QidasieMiliket = new HashMap<String,String>();
+	private HashMap<ስልት, HashMap<String,String>> QidasieMiliketBySilt = new HashMap< ስልት, HashMap<String,String> >();
 	
 	private HashMap<String,String> ZiqMiliket = new HashMap<String,String>();
-	private HashMap<String, HashMap<String,String>> ZiqMiliketBySilt = new HashMap< String, HashMap<String,String> >();
+	private HashMap<ስልት, HashMap<String,String>> ZiqMiliketBySilt = new HashMap< ስልት, HashMap<String,String> >();
 	
 	private HashMap<String,String> ZimarieMiliket = new HashMap<String,String>();
-	private HashMap<String, HashMap<String,String>> ZimarieMiliketBySilt = new HashMap< String, HashMap<String,String> >();
+	private HashMap<ስልት, HashMap<String,String>> ZimarieMiliketBySilt = new HashMap< ስልት, HashMap<String,String> >();
 	
 	private HashMap<String,String> LeilaMiliket = new HashMap<String,String>();
-	private HashMap<String, HashMap<String,String>> LeilaMiliketBySilt = new HashMap< String, HashMap<String,String> >();
+	private HashMap<ስልት, HashMap<String,String>> LeilaMiliketBySilt = new HashMap< ስልት, HashMap<String,String> >();
 	
 	private HashMap<String,String> ToBeDeterminedMiliket = new HashMap<String,String>();
-	private HashMap<String, HashMap<String,String>> ToBeDeterminedMiliketBySilt = new HashMap< String, HashMap<String,String> >();
+	private HashMap<ስልት, HashMap<String,String>> ToBeDeterminedMiliketBySilt = new HashMap< ስልት, HashMap<String,String> >();
 	
 	private Map<String, HashMap<String,String>> books = new HashMap<String,HashMap<String,String>>();
-	private Map<String, HashMap<String, HashMap<String,String>>> booksByMiliket = new HashMap<String, HashMap< String, HashMap<String,String> >>();
+	private Map<String, HashMap<ስልት, HashMap<String,String>>> booksByMiliket = new HashMap<String, HashMap< ስልት, HashMap<String,String> >>();
 	
 	private Pattern Qirts = Pattern.compile( "[᎐᎔᎗᎓᎒᎑᎙᎕᎖᎘\\s]+" );
-	private String bookFlag = "all";
+	// private String bookFlag = "all";
+	
+	Map<ስልት,Color> rubricationColors = null;
+	private final Color red = new Color();
+	
+	private boolean rubricate = false;
+	private boolean fix121 = false;
+	private boolean markUnknown = true;
+	private boolean removeEmpty = true;
+	
+	private Set<String> miliketSet = null;
+	
 
+	/* for later, maybe....
 	private ProgressBar progressBar = null;
 	public void setProgressBar( ProgressBar progressBar ) {
 		this.progressBar = progressBar;
 	}
+	*/
 	
-	private void readMap(String book, HashMap<String,String> map, HashMap<String, HashMap<String,String>> mapBySilt, String fileName ) throws UnsupportedEncodingException, IOException {
+	private void readMap(String book, HashMap<String,String> map, HashMap<ስልት, HashMap<String,String>> mapBySilt, String fileName ) throws UnsupportedEncodingException, IOException {
 
 		String line;
 
-		ClassLoader classLoader = this.getClass().getClassLoader();
-		InputStream in = classLoader.getResourceAsStream( "tables/" + fileName ); 
+		ClassLoader    classLoader = this.getClass().getClassLoader();
+		InputStream    in = classLoader.getResourceAsStream( "tables/" + fileName ); 
 		BufferedReader ruleFile = new BufferedReader( new InputStreamReader(in, "UTF-8") );
 		
-		mapBySilt.put(  "ግዕዝ", new HashMap<String,String>() );
-		mapBySilt.put(  "ዕዝል", new HashMap<String,String>() );
-		mapBySilt.put( "ዓራራይ", new HashMap<String,String>() );
+		mapBySilt.put( ስልት.ግዕዝ, new HashMap<String,String>() );
+		mapBySilt.put( ስልት.ዕዝል, new HashMap<String,String>() );
+		mapBySilt.put( ስልት.ዓራራይ, new HashMap<String,String>() );
 		books.put( book, map );
 		booksByMiliket.put( book, mapBySilt );
 		
@@ -106,10 +122,10 @@ public class CheckMiliket {
 				map.put( longField, shortField );
 			}
 			
-			if ( siltField.contains( "፡ወ")) {
+			if ( siltField.contains( "፡ወ")) {  // check if these are eliminated
 				String[] parts = siltField.split("፡ወ");
 				for( String part: parts) {
-					HashMap<String,String> siltMap = mapBySilt.get( part );
+					HashMap<String,String> siltMap = mapBySilt.get( ስልት.valueOf( part ) );
 					if( siltMap == null ) {
 						System.err.println( "Unrecognized silt, skipping: " + part + " on line " + lineNumber + " of " + fileName );
 					}
@@ -119,7 +135,7 @@ public class CheckMiliket {
 				}	
 			}
 			else {
-				HashMap<String,String> siltMap = mapBySilt.get( siltField );
+				HashMap<String,String> siltMap = mapBySilt.get( ስልት.valueOf( siltField ) );
 				if( siltMap == null ) {
 					System.err.println( "Unrecognized silt, skipping: " + siltField + " on line " + lineNumber + " of " + fileName );
 				}
@@ -131,43 +147,38 @@ public class CheckMiliket {
 		
 		map.put( "አንብር", "ር" );
 		map.put( "ድርስ", "ስ|ርስ" );
-		// map.put( "ድርስ2", "ርስ" );
-		map.put( "ሥረዩ", "ረዩ" );
-		
-		
+		map.put( "ሥረዩ", "ረዩ|ዩ" );
+	
 		ruleFile.close();
 	}
 	
-	public CheckMiliket() {
-		try {
-			readMap( "ድጓ", DiguaMiliket, DiguaMiliketBySilt, "DiguaMiliket.txt" );
-			readMap( "ጾመ፡ድጓ", TsomeDiguaMiliket, TsomeDiguaMiliketBySilt, "TsomeDiguaMiliket.txt" );
-			readMap( "ምዕራፍ", MeerafMiliket, MeerafMiliketBySilt, "MeerafMiliket.txt" );
-			readMap( "ዚቅ", ZiqMiliket, ZiqMiliketBySilt, "ZiqMiliket.txt" );
-			readMap( "ዝማሬ", ZimarieMiliket, ZimarieMiliketBySilt, "ZimarieMiliket.txt" );
-			readMap( "ሌላቸው፡በምሕፃረ፡ቃል", LeilaMiliket, LeilaMiliketBySilt, "LeilaMiliket.txt" );
-			readMap( "TBD", ToBeDeterminedMiliket, ToBeDeterminedMiliketBySilt, "ToBeDetermined.txt" );
-		}
-		catch(Exception ex) {
-			System.err.println( ex );
-		}
-	}
-
-	
-	protected void setError(R r) {
-		RPr rpr = r.getRPr();
-		// RFonts rfonts = rpr.getRFonts();
-		Color red = new Color();
+	public CheckMiliket() throws Exception {
 		red.setVal( "FF0000" );
+		
+		readMap( "ድጓ",    DiguaMiliket, DiguaMiliketBySilt, "DiguaMiliket2.txt" );
+		readMap( "ጾመ፡ድጓ", TsomeDiguaMiliket, TsomeDiguaMiliketBySilt, "TsomeDiguaMiliket2.txt" );
+		readMap( "ምዕራፍ", MeerafMiliket, MeerafMiliketBySilt, "MeerafMiliket2.txt" );
+		readMap( "መዋሥዕት", MewasetMiliket, MewasetMiliketBySilt, "MewasetMiliket.txt" );
+		readMap( "ቅዳሴ",   QidasieMiliket, QidasieMiliketBySilt, "QidasieMiliket.txt" );
+		readMap( "ዚቅ",    ZiqMiliket, ZiqMiliketBySilt, "ZiqMiliket.txt" );
+		readMap( "ዝማሬ",  ZimarieMiliket, ZimarieMiliketBySilt, "ZimarieMiliket.txt" );
+		readMap( "ሌላቸው፡በምሕፃረ፡ቃል", LeilaMiliket, LeilaMiliketBySilt, "LeilaMiliket.txt" );
+		readMap( "Other (to be categorized)",    ToBeDeterminedMiliket, ToBeDeterminedMiliketBySilt, "ToBeDetermined.txt" );
+	}
+	
+	protected void markUnknown(R r) {
+		RPr rpr = r.getRPr();
 		rpr.setColor( red ); 
 	}
 	
-	protected boolean isValidMiliket(String annotation, HashMap<String,String> miliketMap) {
+	protected boolean isValidMiliket(String miliket, HashMap<String,String> miliketMap) {
 		
+		/*
 	    String miliket = Qirts.matcher(annotation).replaceAll("");
 	    if( "".equals(miliket) ) {
 	    	return true;
 	    }
+	    */
 
 		for(String key: miliketMap.keySet() ) {
 
@@ -210,48 +221,89 @@ public class CheckMiliket {
 	
 	// For a given book, check miliket over all silt
 	protected boolean isValidMiliket(String miliket) {
-		return isValidMiliket( miliket, this.bookFlag );
-	}	
-	// For a given book, check miliket over all silt
-	protected boolean isValidMiliket(String miliket, String book) {
-
-		if( book.equals( "all" ) ) {
-			for( String key: books.keySet() ) {
-				// System.out.println( "Checking Book [" + miliket + "]: " + key);
-				HashMap<String, String>  bookMap = books.get(key);
-				boolean isValid = isValidMiliket( miliket, bookMap );
-				if ( isValid == true ) {
-					return true;
-				}
+		for( String book: miliketSet ) {
+			// System.out.println( "Checking Book [" + miliket + "]: " + key);
+			HashMap<String, String>  bookMap = books.get(book);
+			boolean isValid = isValidMiliket( miliket, bookMap );
+			if ( isValid == true ) {
+				return true;
 			}
-		}
-		else {
-			HashMap<String, String> bookMap = books.get( book );
-		
-			return isValidMiliket( miliket, bookMap );
 		}
 		
 		return false;
 	}
 	
+	// For a given book, check miliket over all silt
+	protected boolean isValidMiliket(String miliket, String book) {
+			HashMap<String, String> bookMap = books.get( book );
+		
+			return isValidMiliket( miliket, bookMap );
+	}
+	
 	
 	// For a given book, check miliket for a specific silt
 	// For a given book and silt, check miliket
-	protected boolean isValidMiliket(String miliket, String book, String silt) {
+	protected boolean isValidMiliket(String miliket, String book, ስልት silt) {
+		miliket = miliket.trim();
+		if ( "".equals( miliket ) ) {
+			return true; // ignore
+			// in the future add an option to remove empty <rt>
+		}
+		
+	    String test = Qirts.matcher(miliket).replaceAll("");
+	    if( "".equals(test) ) {
+	    	return true;
+	    }
+	    
+		System.out.println( "Checking: " + book + " for " + miliket + " under " + silt );
+		
 
-		HashMap<String, HashMap<String,String>> siltByBookMap = booksByMiliket.get( book );
+		HashMap<ስልት, HashMap<String,String>> siltByBookMap = booksByMiliket.get( book );
+		
+		if(! siltByBookMap.containsKey( silt ) ) {
+			return false;
+		}
 		HashMap<String, String> siltMap = siltByBookMap.get( silt );
 		
 		return isValidMiliket( miliket, siltMap );
 	}
 	
+	
+	public ስልት getSiltOfMililket(String miliket) {
+		
+		for(ስልት silt: ስልት.values() ) {
+			for(String book: books.keySet() ) {
+				if( isValidMiliket( miliket, book, silt) ) {
+					return silt;
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	
+	protected void rubricate(R r, String miliket) {
+		ስልት silt = getSiltOfMililket( miliket );
+		if( silt != null ) {
+			Color color = rubricationColors.get(silt);
+			if( color != null ) {
+				RPr rpr = r.getRPr();
+				rpr.setColor( color );
+			}
+		}
+	}
+	
+	
+	/* Return to this later
+	 * 
 	public void processObjectsWithProgressBar( final JaxbXmlPart<?> part ) throws Docx4JException
 	{
 				
 			ClassFinder finder = new ClassFinder( CTRuby.class );
 			new TraversalUtil(part.getContents(), finder);	
 
-			Task task = new Task<Void>() {
+			Task<Void> task = new Task<Void>() {
 				@Override public Void call() {
 					int objects = finder.results.size();
 					int count = 0;
@@ -278,7 +330,7 @@ public class CheckMiliket {
 									Text txt = (org.docx4j.wml.Text)x2;
 									// this line is here for testing, later make the book a command line parameter
 									if(! isValidMiliket( txt.getValue() ) ) {
-										setError(r);
+										markUnknown( r );
 									}
 				
 								}
@@ -289,6 +341,7 @@ public class CheckMiliket {
 					
 
 						} else {
+							// throw exception
 							System.err.println( XmlUtils.marshaltoString(o, true, true) );
 						}
 				
@@ -301,18 +354,20 @@ public class CheckMiliket {
 					return null;
 				}
 			};
-			this.progressBar.progressProperty().bind( task.progressProperty() );
+			// return to this later
+			// this.progressBar.progressProperty().bind( task.progressProperty() );
 			new Thread(task).start();
 
 	}
+	*/
 
-	public void processObjects( final JaxbXmlPart<?> part, boolean fix121 ) throws Docx4JException
+	public void processObjects( final JaxbXmlPart<?> part, List<Object> content ) throws Docx4JException
 	{
 			
 		ClassFinder finder = new ClassFinder( CTRuby.class );
 		new TraversalUtil(part.getContents(), finder);
 	
-
+		int index = 0;
 		for (Object o : finder.results) {
 			Object o2 = XmlUtils.unwrap(o);
 					
@@ -335,32 +390,63 @@ public class CheckMiliket {
 				List<Object> rtObjects = rt.getEGRubyContent();
 				R r = (org.docx4j.wml.R)rtObjects.get(0);
 
-				List<Object> rObjects = r .getContent();		
+				List<Object> rObjects = r.getContent();	
+				boolean clearObjects = false;
 				for ( Object x : rObjects ) {
 					Object x2 = XmlUtils.unwrap(x);
 					if ( x2 instanceof org.docx4j.wml.Text ) {
 							Text txt = (org.docx4j.wml.Text)x2;
 							// this line is here for testing, later make the book a command line parameter
-							if(! isValidMiliket( txt.getValue() ) ) {
-								// System.out.println( "Setting error for: " + txt.getValue() );
-								setError(r);
+							String miliket = txt.getValue();
+							if(! isValidMiliket( miliket ) ) {
+								if ( markUnknown ) {
+									markUnknown( r );
+								}
+							}
+							else if( rubricate ) {
+								// get the silt that corresponds to the r
+								rubricate( r, miliket );
+							}
+							if( removeEmpty ) {
+								if( "".equals( miliket.trim() ) ) {
+									clearObjects = true;
+								}
 							}
 					}
 					else {
 						// System.err.println( "Found: " + x2.getClass() );
 					}
 				}
+				if( clearObjects ) {
+					R rubyParent = (R)ruby.getParent();
+					CTRubyContent rb = ruby.getRubyBase();
+					List<Object> rbObjects = rb.getEGRubyContent();
+					r = (org.docx4j.wml.R)rbObjects.get(0);
+					rObjects = r.getContent();	
+					for ( Object x : rObjects ) {
+						Object x2 = XmlUtils.unwrap(x);
+						if ( x2 instanceof org.docx4j.wml.Text ) {
+							Text txt = (org.docx4j.wml.Text)x2;
+							txt.setParent(rubyParent);
+							rubyParent.getContent().add(txt);
+						}
+					}
+					rubyParent.getContent().remove(0);
+				}
 				
 			} else {
 				System.err.println( XmlUtils.marshaltoString(o, true, true) );
+				// throw exception
 			}
-			
+			index++;
 		}
 
 	}
 
-	public void setMiliketSet( String miliketSet )
+	public void setMiliketSet( Set<String> miliketSet )
 	{
+		this.miliketSet = miliketSet;
+		/*
 		switch( miliketSet.toLowerCase() ) {
 			case "digua":
 			case "ድጓ":
@@ -383,59 +469,46 @@ public class CheckMiliket {
 				break;
 			
 			default:
+				// throw exception
 				System.err.println( "The miliket collection \"" + miliketSet + "\", is not recognized" );
 				System.exit(0);
 		}
+		*/
 	}
 	
-	public void process( String miliketSet, final File inputFile, final File outputFile, boolean fix121 )
-	{
+	public void setOptions( Set<String> miliketSet, boolean markUnknown, boolean fix121,  boolean removeEmpty, Map<ስልት,Color> rubricationColors ) {
 		setMiliketSet( miliketSet );
-		process( inputFile, outputFile, fix121 );
+		this.markUnknown = markUnknown;
+		this.fix121      = fix121;
+		this.removeEmpty = removeEmpty;
+		if(! rubricationColors.isEmpty()  ) {
+			this.markUnknown = false;
+			this.rubricate = true;
+		}
+		this.rubricationColors = rubricationColors;
 	}
 	
+	public void resetFlags() {
+		this.fix121 = false;
+		this.markUnknown = false;
+		this.rubricate = false;
+		// this.bookFlag = "all";
+		this.miliketSet = null;
+	}
 	
-	public void process( final File inputFile, final File outputFile, boolean fix121 )
+	public void process( final File inputFile, final File outputFile ) throws Exception
 	{
-
-		try {
-			WordprocessingMLPackage wordMLPackage = WordprocessingMLPackage.load( inputFile );		
-			MainDocumentPart documentPart = wordMLPackage.getMainDocumentPart();
-       		processObjects( documentPart, fix121 );
+		WordprocessingMLPackage wordMLPackage = WordprocessingMLPackage.load( inputFile );		
+		MainDocumentPart documentPart = wordMLPackage.getMainDocumentPart();
+		List<Object> content = documentPart.getContent();
+       	processObjects( documentPart, content );
             
-       		if( documentPart.hasFootnotesPart() ) {
-	            FootnotesPart footnotesPart = documentPart.getFootnotesPart();
-       			processObjects( footnotesPart, fix121 );
-       		}
+      	if( documentPart.hasFootnotesPart() ) {
+      		FootnotesPart footnotesPart = documentPart.getFootnotesPart();
+      		processObjects( footnotesPart, content );
+      	}
 
-   
-       		wordMLPackage.save( outputFile );
-		}
-		catch ( Exception ex ) {
-			System.err.println( ex );
-		}
-
-	}
-	
-
-	public static void main( String[] args ) {
-		if( args.length != 3 ) {
-			System.err.println( "Exactly 3 arguements are expected: <digua|tsome-digua|meeraf|all> <input file> <output file>" );
-			System.exit(0);
-		}
-
-
-		String miliketSet = args[0];
-		String inputFilepath  = System.getProperty("user.dir") + "/" + args[1];
-		String outputFilepath = System.getProperty("user.dir") + "/" + args[2];
-		File inputFile = new File ( inputFilepath );
-		File outputFile = new File ( outputFilepath );
-		
-		CheckMiliket converter = new CheckMiliket();		
-		converter.setMiliketSet( miliketSet );
-		converter.process( inputFile, outputFile, false );
-
-
+      	wordMLPackage.save( outputFile );
 	}
 	
 }
