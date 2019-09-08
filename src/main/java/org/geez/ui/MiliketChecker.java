@@ -377,7 +377,7 @@ public final class MiliketChecker extends Application {
 			        link.setOnAction( evt -> {
 	                    alert.close();
 	                    try {
-		                    URI uri = new URI( "https://github.com/dyacob/ZaimaCorrect/" );
+		                    URI uri = new URI( "https://github.com/geezorg/ZaimaChecker/" );
 		                    desktop.browse( uri );
 	                    }
 	                    catch(Exception ex) {
