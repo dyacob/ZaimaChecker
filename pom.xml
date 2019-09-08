@@ -11,7 +11,7 @@
 	<groupId>geez.org</groupId>
 	<artifactId>ZaimaChecker</artifactId>
 	<version>0.1.0-SNAPSHOT</version>
-	<name>Word DOCX Zaima Miliket Checker</name>
+	<name>Word Docx Zaima Miliket Checker</name>
 	<dependencies>
 		<dependency>
 			<groupId>org.docx4j</groupId>
