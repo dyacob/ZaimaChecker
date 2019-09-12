@@ -35,26 +35,26 @@ modified.
 
 ### Mark Unknown
 When selected (the default), the checker will color any unrecognized miliket in red. This option cannot be used in
-combination with miliket rubrication.  When a rubrication color is chosen (via the "Rubricate" menu), the *Mark Unknown*
+combination with miliket rubrication.  When a rubrication color is chosen (via the "Rubricate" menu), the **Mark Unknown**
 option is disabled.
 
 ### Miliket Sets
 The specific miliket set used for validation can be selected.  By default all collections will be applied, collections
-may be deslected from the *Miliket Sets* menu.
+may be deslected from the **Miliket Sets** menu.
 
 <img src="doc/ZaimaMiliketChecker-MiliketSets-v0.4.png" width="600" border="1" alt="v0.4 Miliket Sets"/>
 
 ### Rubricate
 The miliket checker can set the font color of miliket as desired for a given silt (ስልት).  This feature can be used in
-combination with the *Miliket Set* selections, but *not* in combination with the *Mark Unknown* option.
+combination with the **Miliket Set** selections, but *not* in combination with the **Mark Unknown** option.
 
 <img src="doc/ZaimaMiliketChecker-Rubricate-v0.4.png" width="600" border="1" alt="v0.4 Rubrication"/>
 
 
 ### Fixes
 
-* *Set "1-2-1" to "centered"* - this option which reset the "1-2-1" ruby distribution layout (the MS Word default) to "centered" style.
-* *Remove empty &lt;rt&gt; nodes* - this option will delete any ruby text containing only spaces or no data at all.
+* **Set "1-2-1" to "centered"** - this option which reset the "1-2-1" ruby distribution layout (the MS Word default) to "centered" style.
+* **Remove empty &lt;rt&gt; nodes** - this option will delete any ruby text containing only spaces or no data at all.
 
 <img src="doc/ZaimaMiliketChecker-Fixes-v0.4.png" width="600" border="1" alt="v0.4 Fixes"/>
 
