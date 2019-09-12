@@ -40,13 +40,13 @@ When selected the checker will color any unrecognized miliket with red.
 ### Miliket Sets
 By default, all miliket collections are used for validation.  One or more miliket collections may be unselected as desired:
 
-<img src="doc/ZaimaMiliketChecker-MiliketSets-v0.4.png" width="850" border="1" alt="v0.4 Miliket Sets"/>
+<img src="doc/ZaimaMiliketChecker-MiliketSets-v0.4.png" width="600" border="1" alt="v0.4 Miliket Sets"/>
 
 ### Rubricate
 The miliket checker can set the font color of miliket as desired for a given silt (ስልት).  This feature can be used in
 combination with the *Miliket Set* selections:
 
-<img src="doc/ZaimaMiliketChecker-Rubricate-v0.4.png" width="851" border="1" alt="v0.4 Rubrication"/>
+<img src="doc/ZaimaMiliketChecker-Rubricate-v0.4.png" width="600" border="1" alt="v0.4 Rubrication"/>
 
 
 ### Fixes
