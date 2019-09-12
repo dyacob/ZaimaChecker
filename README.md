@@ -13,13 +13,13 @@ sets are being continually refined and updated.  Currently just over 600 miliket
 in:
 
 * ድጓ (169)
-* ጾመ፡ድጓ (121)
+* ጾመ፡ድጓ፡ (121)
 * ምዕራፍ (248)
 * ቅዳሴ (30)
 * ዚቅ (1)
 * ዝማሬ (12)
 * መዋሥዕት (8)
-* ሌላቸው፡በምሕፃረ፡ቃል (26)
+* ሌላቸው፡በምሕፃረ፡ቃል፡ (26)
 
 
 ## Download
