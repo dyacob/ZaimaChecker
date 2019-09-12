@@ -29,13 +29,13 @@ in:
 ## Usage & Options
 The Zaima Miliket Checker will scan selected .docx files and examine miliket found in "Ruby Text" (aka "Phonetic Guide" text).
 The checker will produce an output file using the original name as the source file with "-Checked" appended to the file name.
-The "-Checked" file will contain corrections and enhancements as chosen under the "Options" menu.  The source files are not
+The "-Checked" file will contain corrections and enhancements as chosen under the **Options** menu.  The source files are not
 modified.
 
 
 ### Mark Unknown
 When selected (the default), the checker will color any unrecognized miliket in red. This option cannot be used in
-combination with miliket rubrication.  When a rubrication color is chosen (via the "Rubricate" menu), the **Mark Unknown**
+combination with miliket rubrication.  When a rubrication color is chosen (via the **Rubricate** menu), the **Mark Unknown**
 option is disabled.
 
 ### Miliket Sets
