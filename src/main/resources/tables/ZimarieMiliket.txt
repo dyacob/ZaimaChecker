@@ -1,6 +1,5 @@
 # Moges additions found during correction
 # ወበህየ,ወበ,ዕዝል
-# from
 ኅብስት,ኅ,ግዕዝ
 በክልዔ፡አሣ,ሣ,ግዕዝ
 በዝማሬ,ሬ,ግዕዝ
