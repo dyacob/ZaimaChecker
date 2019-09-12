@@ -22,6 +22,11 @@ in:
 * ሌላቸው፡በምሕፃረ፡ቃል (26)
 
 
+## Download
+
+* [Direct download of v0.4 here.](https://github.com/geezorg/ZaimaChecker/releases/download/v0.4.0/ZaimaChecker-0.4.0-full-gui.jar)
+* [Read the notes on the latest updates.](https://github.com/geezorg/ZaimaChecker/releases/tag/v0.4.0)
+
 ## Usage & Options
 The Zaima Miliket Checker will scan selected .docx files and examine miliket found in "Ruby Text" (aka "Phonetic Guide" text).
 The checker will produce an output file using the original name as the source file with "-Checked" appended to the file name.
@@ -32,16 +37,16 @@ modified.
 ### Mark Unknown
 When selected the checker will color any unrecognized miliket with red.
 
-### Miliket Set
+### Miliket Sets
 By default, all miliket collections are used for validation.  One or more miliket collections may be unselected as desired:
 
-![v0.4 Rubrication](doc/ZaimaMiliketChecker-MiliketSet-v0.4.png)
+<img src="doc/ZaimaMiliketChecker-MiliketSet-v0.4.png" width="850" border="1" alt="v0.4 Miliket Sets"/>
 
 ### Rubricate
 The miliket checker can set the font color of miliket as desired for a given silt (ስልት).  This feature can be used in
 combination with the *Miliket Set* selections:
 
-![v0.4 Rubrication](doc/ZaimaMiliketChecker-Rubricate-v0.4.png)
+<img src="doc/ZaimaMiliketChecker-Rubricate-v0.4.png" width="851" border="1" alt="v0.4 Rubrication"/>
 
 
 ### Fixes
