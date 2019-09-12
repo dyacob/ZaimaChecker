@@ -156,13 +156,13 @@ public class CheckMiliket {
 		red.setVal( "FF0000" );
 		
 		readMap( "ድጓ",    DiguaMiliket, DiguaMiliketBySilt, "DiguaMiliket.txt" );
-		readMap( "ጾመ፡ድጓ", TsomeDiguaMiliket, TsomeDiguaMiliketBySilt, "TsomeDiguaMiliket.txt" );
+		readMap( "ጾመ፡ድጓ፡", TsomeDiguaMiliket, TsomeDiguaMiliketBySilt, "TsomeDiguaMiliket.txt" );
 		readMap( "ምዕራፍ", MeerafMiliket, MeerafMiliketBySilt, "MeerafMiliket.txt" );
 		readMap( "መዋሥዕት", MewasetMiliket, MewasetMiliketBySilt, "MewasetMiliket.txt" );
 		readMap( "ቅዳሴ",   QidasieMiliket, QidasieMiliketBySilt, "QidasieMiliket.txt" );
 		readMap( "ዚቅ",    ZiqMiliket, ZiqMiliketBySilt, "ZiqMiliket.txt" );
 		readMap( "ዝማሬ",  ZimarieMiliket, ZimarieMiliketBySilt, "ZimarieMiliket.txt" );
-		readMap( "ሌላቸው፡በምሕፃረ፡ቃል", LeilaMiliket, LeilaMiliketBySilt, "LeilaMiliket.txt" );
+		readMap( "ሌላቸው፡በምሕፃረ፡ቃል፡", LeilaMiliket, LeilaMiliketBySilt, "LeilaMiliket.txt" );
 		readMap( "Other (to be categorized)",    ToBeDeterminedMiliket, ToBeDeterminedMiliketBySilt, "ToBeDetermined.txt" );
 	}
 	
@@ -173,9 +173,9 @@ public class CheckMiliket {
 	
 	protected boolean isValidMiliket(String miliket, HashMap<String,String> miliketMap) {
 		
-		/*
-	    String miliket = Qirts.matcher(annotation).replaceAll("");
-	    if( "".equals(miliket) ) {
+		/* we should have already done this
+	    String test = Qirts.matcher(miliket).replaceAll("");
+	    if( "".equals(test) ) {
 	    	return true;
 	    }
 	    */
@@ -221,6 +221,11 @@ public class CheckMiliket {
 	
 	// For a given book, check miliket over all silt
 	protected boolean isValidMiliket(String miliket) {
+	    String test = Qirts.matcher(miliket).replaceAll("");
+	    if( "".equals(test) ) {
+	    	return true;
+	    }
+	    
 		for( String book: miliketSet ) {
 			// System.out.println( "Checking Book [" + miliket + "]: " + key);
 			HashMap<String, String>  bookMap = books.get(book);

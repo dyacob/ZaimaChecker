@@ -69,7 +69,7 @@ public final class MiliketChecker extends Application {
  
     private Desktop desktop = Desktop.getDesktop();
 	private static final String ድጓ = "ድጓ";
-	private static final String ጾመ_ድጓ = "ጾመ፡ድጓ";
+	private static final String ጾመ_ድጓ = "ጾመ፡ድጓ፡";
 	private static final String ምዕራፍ = "ምዕራፍ";
 	private static final String ዝማሬ = "ዝማሬ";
 	private static final String ዚቅ = "ዚቅ";
