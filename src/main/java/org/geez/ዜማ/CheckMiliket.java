@@ -155,9 +155,9 @@ public class CheckMiliket {
 	public CheckMiliket() throws Exception {
 		red.setVal( "FF0000" );
 		
-		readMap( "ድጓ",    DiguaMiliket, DiguaMiliketBySilt, "DiguaMiliket2.txt" );
-		readMap( "ጾመ፡ድጓ", TsomeDiguaMiliket, TsomeDiguaMiliketBySilt, "TsomeDiguaMiliket2.txt" );
-		readMap( "ምዕራፍ", MeerafMiliket, MeerafMiliketBySilt, "MeerafMiliket2.txt" );
+		readMap( "ድጓ",    DiguaMiliket, DiguaMiliketBySilt, "DiguaMiliket.txt" );
+		readMap( "ጾመ፡ድጓ", TsomeDiguaMiliket, TsomeDiguaMiliketBySilt, "TsomeDiguaMiliket.txt" );
+		readMap( "ምዕራፍ", MeerafMiliket, MeerafMiliketBySilt, "MeerafMiliket.txt" );
 		readMap( "መዋሥዕት", MewasetMiliket, MewasetMiliketBySilt, "MewasetMiliket.txt" );
 		readMap( "ቅዳሴ",   QidasieMiliket, QidasieMiliketBySilt, "QidasieMiliket.txt" );
 		readMap( "ዚቅ",    ZiqMiliket, ZiqMiliketBySilt, "ZiqMiliket.txt" );
