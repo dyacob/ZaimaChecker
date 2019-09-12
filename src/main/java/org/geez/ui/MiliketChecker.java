@@ -235,7 +235,7 @@ public final class MiliketChecker extends Application {
         
         
 
-        Menu checkMenu = new Menu( "Miliket Set" );
+        Menu checkMenu = new Menu( "Miliket Sets" );
        
         for(String book: miliketSet) {
         	CheckMenuItem checkItem = new CheckMenuItem( book );
