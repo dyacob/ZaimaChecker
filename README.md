@@ -26,6 +26,7 @@ in:
 * [Direct download of v0.4 here.](https://github.com/geezorg/ZaimaChecker/releases/download/v0.4.0/ZaimaChecker-0.4.0-full-gui.jar)
 * [Read the notes on the latest updates.](https://github.com/geezorg/ZaimaChecker/releases/tag/v0.4.0)
 
+
 ## Usage & Options
 The Zaima Miliket Checker will scan selected .docx files and examine miliket found in "Ruby Text" (aka "Phonetic Guide" text).
 The checker will produce an output file using the original name as the source file with "-Checked" appended to the file name.
@@ -44,6 +45,7 @@ may be deslected from the **Miliket Sets** menu.
 
 <img src="doc/ZaimaMiliketChecker-MiliketSets-v0.4.png" width="600" border="1" alt="v0.4 Miliket Sets"/>
 
+
 ### Rubricate
 The miliket checker can set the font color of miliket as desired for a given silt (ስልት).  This feature can be used in
 combination with the **Miliket Set** selections, but *not* in combination with the **Mark Unknown** option.
@@ -52,7 +54,6 @@ combination with the **Miliket Set** selections, but *not* in combination with t
 
 
 ### Fixes
-
 * **Set "1-2-1" to "centered"** - this option which reset the "1-2-1" ruby distribution layout (the MS Word default) to "centered" style.
 * **Remove empty &lt;rt&gt; nodes** - this option will delete any ruby text containing only spaces or no data at all.
 
