@@ -174,25 +174,6 @@ public final class MiliketChecker extends Application {
     }
 
     
-    private Dialog<String> createColorDialogOld() {
-    	Dialog<String>  dialog = new Dialog<>();
-    	VBox vbox = new VBox();
-        final ColorPicker colorPicker = new ColorPicker();
-        colorPicker.setValue(Color.RED);
-
-        final Text text = new Text("Color picker:");
-        text.setFill(colorPicker.getValue());
-
-        colorPicker.setOnAction((ActionEvent t) -> {
-        	text.setFill(colorPicker.getValue());
-        });
-
-        vbox.getChildren().addAll( text, colorPicker);
-    	//dialog.getDialogPane().get .getButtonTypes().add(vbox);
-    	return dialog;
-    }
-
-    
     private final String osName = System.getProperty("os.name");
     private final String defaultFont = ( osName.equals("Mac OS X") ) ? "Kefa" : "Ebrima" ;
     private void setSelectedRubricationColor(Menu menu, Menu submenu, RadioMenuItem item, RadioMenuItem other, ስልት silt, Color color, String colorString ) {
@@ -598,7 +579,7 @@ public final class MiliketChecker extends Application {
         Scene scene = new Scene(rootGroup, APP_WIDTH, APP_HEIGHT );
         scene.heightProperty().addListener(new ChangeListener<Number>() {
             @Override public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneHeight, Number newSceneHeight) {
-                listView.setPrefHeight( Integer.parseInt(newSceneHeight.toString().split("\\.")[0] ) - 40);
+                listView.setPrefHeight( Integer.parseInt(newSceneHeight.toString().split("\\.")[0] ) - 40 );
             }
         });
         stage.setScene( scene ); // 305 for screenshots
