@@ -174,8 +174,8 @@ public final class MiliketChecker extends Application {
     }
 
     
-    private final String osName = System.getProperty("os.name");
-    private final String defaultFont = ( osName.equals("Mac OS X") ) ? "Kefa" : "Ebrima" ;
+    private final String osName = System.getProperty( "os.name" );
+    private final String defaultFont = ( osName.equals( "Mac OS X" ) ) ? "Kefa" : "Ebrima" ;
     private void setSelectedRubricationColor(Menu menu, Menu submenu, RadioMenuItem item, RadioMenuItem other, ስልት silt, Color color, String colorString ) {
 		setRubricationColor( silt, color ); 
 		submenu.setStyle( "-fx-font: 12px \"" + defaultFont + "\"; -fx-text-fill: " + colorString + ";" ); 
